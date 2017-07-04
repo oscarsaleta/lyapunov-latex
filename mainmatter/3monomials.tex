@@ -1,0 +1,620 @@
+% !TeX root = ../TFM.tex
+\chapter{Study of low degree systems with 3 monomial nonlinearities}
+
+\section{Center conditions for 3 monomial nonlinearities}
+
+We consider the following 3 monomial system
+\begin{align}
+\dot z &= iz + Az^k\z^\ell + Bz^m\z^n + Cz^p\z^q,
+\label{eq.system}
+\end{align}
+where $A,B,C\in\C$ and $A,B,C\ne0$ (in order to have 3 monomial nonlinearities). We will also use the more general expression
+\begin{align}
+\dot z &= iz+F(z,\z) = iz+\sum_{k+\ell\ge2}f_{k,l}z^k\z^\ell.
+\label{eq.system2}
+\end{align}
+
+We will also use the notation $\alpha=k-\ell-1$, $\beta=m-n-1$ and $\gamma=p-q-1$, for these numbers play a special role in the study of the system. Notice that if $\alpha=0$, $\beta=0$ or $\gamma=0$, the respective associated monomial becomes \emph{resonant} (see section \ref{sec.3mono.resonant} for a simple explanation of some difficulties resonant monomials can introduce).
+
+The following theorem is an extension of Theorem \ref{th.2mono} (Theorem 1 in \nptextcite{Gasull2016}) given by Gasull, Giné and Torregrosa. These authors show a possibly exhaustive classification of the centers for the 2 monomial system \eqref{eq.2mono}. We try to extend their results for our 3 monomial system, which will introduce several difficulties that will be discussed in this chapter.
+
+\begin{theorem}
+The origin of equation \eqref{eq.system} is a center when one of the following conditions hold:
+\begin{enumerate}[(a)]
+\item $k=q=2$, $m=n=1$, $\ell=p=0$ and:
+\begin{enumerate}[(i)]
+\item $B=0$ (Darboux centers)
+\item $A=-\overline B/2$ (Hamiltonian centers),
+\item $\Im(AB)=\Im(\overline B^3C)=\Im(A^3C)=0$ (reversible centers),
+\item $A=2\overline B$ and $|C|=|B|$ (Darboux centers),
+\end{enumerate}
+\item
+$\ell=n=q=0$ (holomorphic centers),
+\item
+$A=-\overline A\e^{i \alpha \varphi}$, $B=-\overline B\e^{i \alpha \varphi}$ and $C=-\overline C\e^{i \alpha \varphi}$ for some $\varphi\in\R$ (reversible centers)
+\item
+$k=m=p$, $(\ell-n)(\ell-q)(n-q)\ne0$ and $\Re(A)=0$, $\Re(B)=0$, $\Re(C)=0$ if $\alpha=0$, $\beta=0$ or $\gamma=0$, respectively (Hamiltonian or new Darboux centers).
+\end{enumerate}
+\label{th.1}
+\end{theorem}
+
+We stated previously that we would only consider cases in which the three monomials were present, so case (a.i) will not be taken into account. However, we include it in the list for completeness, so the 2-monomial case can be retrievable from this theorem.
+
+Notice that these conditions are nonexclusive. For example, even though condition (c) characterizes all reversible centers for equation \eqref{eq.system}, case (a.ii). are also reversible centers. Moreover, there may be centers which are reversible and Hamiltonian or Darbouxian at the same time, fulfilling both conditions.
+
+\begin{observacio}
+Theorem \ref{th.1} is derived directly from the work of \textcite{Gasull2016}, and as such its classification is complete for the cases of two monomial nonlinearities. However, in the 3 monomial case, different, unclassified centers will appear that will have to be studied in detail before considering this characterization problem complete.
+\end{observacio}
+
+Although a proof for Theorem 1 is derived directly from \textcite{Gasull2016} and \textcite{Zoladek1994}, we will include here the main results that justify this theorem.
+
+\begin{definicio}
+The origin of \eqref{eq.system2} is said to be a \emph{persistent center} if it is center for $\dot z=iz+\lambda F(z,\z)$ for all $\lambda\in\C$. Similarly, the origin is a \emph{weakly persistent center} if it is a center for $\dot z=iz+\mu F(z,\z)$, for all $\mu\in\R$ \parencite{Cima2009}.
+\end{definicio}
+
+\begin{theorem}[Gasull, Giné and Torregrosa, 2016]
+\label{th.gagito}
+Consider the differential equation \eqref{eq.system2} where $F(z,\z)=z^kf(\z)=z^k\sum_{\ell\ge0}f_\ell\z^\ell$ for $k\ge0$, and $F$ starts at the origin at least with second degree terms. Then the origin is a center if and only if either $k\in\{0,1\}$ or $k>1$ and $\Re(f_{k-1})=0$. Indeed, in all cases the origin is a weakly persistent center, Hamiltonian when $k=0$ and of Darboux type when $k\ge1$. Moreover, it is a persistent center when $k\in\{0,1\}$ or $k>1$ and $f_{k-1}=0$.
+\begin{proof}
+First of all, notice that, since the origin is a monodromic critical point\footnote{A critical point $p$ of a system is called \emph{monodromic} if there is a neighbourhood and a smooth arc originating at the singular point which is transversal to the field at every point except the origin, with the property that the direction field on the neighbourhood with the arc removed is diffeomorphic to the standard field  \parencite{Aranson1996}.}, to prove that it is a center it suffices to construct a smooth first integral of \eqref{eq.system2} that is continuous at the origin.
+
+Also notice that for $k>0$, the function $U(z,\z)=z\z=0$ is an invariant algebraic curve for \eqref{eq.system2}:
+\begin{align*}
+\dot U(z,\z)=\dot z\z+z\dot\z=2\Re\left(z^{k-1}f(\z)\right)U(z,\z).
+\end{align*}
+Using this function it is easy to see that $U^{-k}(z,\z)=(z\z)^{-k}$ is an integrating factor of the differential equation. First, recall that if $X$ is the vector field associated to a differential equation $\dot z=G(z,\z)$ then
+\begin{align*}
+\div(X) &= 2\Re\left(\pd{}{z}(G(z,\z))\right).
+\end{align*}
+Thus, for the equation $\dot z=(iz+z^kf(\z))(z\z)^{-k}$:
+\begin{align*}
+\div(X) &= 2\Re\left(\pd{}{z}\left((iz+z^kf(\z))(z\z)^{-k}\right)\right) = 2(1-k)\Re(i(z\z)^{-k})=0,
+\end{align*}
+so $(z\z)^{-k}$ is an integrating factor of the equation \eqref{eq.system2} as we wanted to show. This means that we can compute a first  integral for the equation. Let $H_1(z,\z)$ be a function such that
+\begin{align*}
+\pd{H_1(z,\z)}{\z}&=(iz+z^kf(\z))(z\z)^{-k},
+\end{align*}
+then
+\begin{align*}
+H_1(z,\z) &= \begin{cases}
+i\frac{(z\z)^{1-k}}{1-k}+g(\z)-\overline{(g(\z))}  & \textrm{if } k\ne1,\\
+\log(z\z)i+g(\z)-\overline{(g(\z))} & \textrm{if } k=1,
+\end{cases}
+\end{align*}
+where $g'(u)=u^{-k}f(u)$. Therefore, the real function
+\begin{align*}
+H_2(z,\z)=\begin{cases}
+\frac{(z\z)^{1-k}}{2(1-k)}+\Im(g(\z))  & \textrm{if } k\ne1,\\
+\frac{\log(z\z)}{2}+\Im(g(\z)) & \textrm{if } k=1,
+\end{cases}
+\end{align*}
+is a candidate to be a first integral of \eqref{eq.system2} at $\C\setminus\{0\}$.
+
+First consider the case $k=0$. The function
+\begin{align*}
+H(z,\z)&=H_2(z,\z)=\frac{z\z}{2}+\Im(g(\z)),
+\end{align*}
+where $g(u)=\int_0^uf(s)\dd s$, is a smooth first integral at the origin, so \eqref{eq.system2} under these conditions has a center at the origin.
+
+When $k=1$, consider the first integral
+\begin{align*}
+H(z,\z)&=\e^{2H_2(z,\z)}=z\z\e^{2\Im(g(\z))},
+\end{align*}
+where $g(u)=\int_0^u f(s)/s~\dd s$. As $f(0)=0$, $H(z,\z)$ is smooth at the origin. Hence, for $k=1$ the origin is also a center.
+
+Finally, for $k>1$ we define
+\begin{align*}
+H(z,\z)&=\frac{1}{H_2(z,\z)}=\frac{(z\z)^{k-1}}{\frac{1}{2(1-k)}+(z\z)^{k-1}\Im(g(\z))},
+\end{align*}
+where
+\begin{align*}
+g(u) &= \int_{u_0}^u \frac{f(s)}{s^k}~\dd s = \int_{u_0}^u \sum_{\ell\ge0} f_\ell s^{\ell-k}\dd s = \sum_{\ell\ge0,\ell\ne k-1} \frac{f_\ell}{\ell-k+1}u^{\ell-k+1}+f_{k-1}\log u+g_0,
+\end{align*}
+for some $g_0\in\C$. This function must not be multivaluated in $\C$, so we need that $\Im(f_{k-1}\log\z)$ is not multivaluated, so we need $\Re(f_{k-1})=0$. Under these conditions, $H(z,\z)$ is well defined in $\C$ and moreover
+\begin{align*}
+\lim_{z\to0}(z\z)^{k-1}\Im(g(\z))=0,
+\end{align*}
+so $H(z,\z)$ is also continuous at the origin. Therefore, for $k>1$ and $\Re(f_{k-1})=0$, the origin is a center. What is more, the same expression of $H$ implies that if $\Re(f_{k-1})\ne0$, then the origin is not a center.
+\end{proof}
+\end{theorem}
+
+\begin{observacio}
+The fact that $\Re(f_{k-1})=0$ means that if any monomial is resonant, then its coefficient must be purely imaginary.
+\end{observacio}
+
+
+
+
+The following proposition covers the reversible and holomorphic cases of Theorem \ref{th.1}. For a proof see \textcite{Cima1997,Gasull2016}.
+\begin{proposition}
+Equation \eqref{eq.system2} has a center at the origin when one of the following conditions hold:
+\begin{enumerate}[(a)]
+\item
+There exists $\varphi\in\R$ such that $f_{k,\ell}=-\overline f_{k,\ell}\e^{i(k-\ell-1)\varphi}$ for all $k,\ell$ (reversible center).
+\item
+$F(z,\z)\equiv F(z)$ (holomorphic center).
+\end{enumerate}
+\label{prop.1}
+
+
+\end{proposition}
+
+
+\begin{proof}[Proof of Theorem \ref{th.1}]
+Case (a) is well-known for quadratic systems (see \textcite{Zoladek1994}). Cases (b) and (c) are derived directly from Proposition \ref{prop.1}, and case (d) is a consequence of Theorem \ref{th.gagito}. 
+\end{proof}
+
+
+
+\begin{observacio}
+Theorem \ref{th.gagito} covers a set of sufficient conditions for a system to present a center. However, we have not proved that this list is exhaustive, i.e. we do not know if there are other kind of centers that are not covered by this theorem.
+\end{observacio}
+
+In order to check the exhaustivity of Theorem \ref{th.1}, we need to perform as \textcite{Gasull2016}, and sweep a wide range of polynomial systems to find conditions in which the theorem holds.
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Reversible centers}
+\label{sec.reversible}
+
+We use the same notion of reversibility than \textcite{Gasull2016}, which is the sense introduced by Poincaré: we say a center is reversible when it has a line of symmetry. Notice that if a system has a line of symmetry along the origin, the singular point at the origin cannot be a weak focus, because this would break the symmetry. Therefore, finding a symmetry assures the presence of a center.
+
+As stated in Theorem \ref{th.1}, reversible centers for 3 monomial systems such as \eqref{eq.system} fulfill the following simple condition:
+\begin{align}
+A &= -\overline A\e^{i \alpha \varphi},\label{eq.rev.1}\\
+B &= -\overline B\e^{i \beta \varphi},\label{eq.rev.2}\\
+C &= -\overline C\e^{i \gamma \varphi}.\label{eq.rev.3}
+\end{align}
+
+\begin{observacio}
+This condition must be held for the \emph{same} value of $\varphi$ in the three expressions.
+\end{observacio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{The two monomial case}
+
+
+Let us review the way in which \citeauthor{Gasull2016} solve this problem for the case of two monomials. First, they assume that the monomial $Az^k\z^{\ell}$ is not resonant, so they can apply a change of variables to make $A=1$. Therefore, the conditions become
+\begin{align*}
+1 &= -\e^{i \alpha \varphi},\\
+B &= -\overline B\e^{i \beta \varphi}.
+\end{align*}
+Notice how the first condition asks for $\e^{i \varphi}$ to be an $\alpha$-root of the unity. Knowing that, we can rise the second condition to the power of $\alpha$:
+\begin{align}
+B^\alpha&=(-\overline B\e^{i \beta \varphi})^\alpha = (-\overline B)^\alpha\e^{i \alpha \beta \varphi} = (-1)^{\alpha+\beta}\overline B^\alpha,
+\label{eq.2mono.reversible}
+\end{align}
+where we used the first equation to simplify the exponential and get rid of $\varphi$ in the expression.
+
+Equation \eqref{eq.2mono.reversible} gives a condition for a reversible center in system \eqref{eq.2mono} that depends only on $B$, $\alpha$ and $\beta$. In this case, this condition is really easy to identify in the focal values, because it will always be of the form $B^\alpha\pm \overline B^\alpha$. If any of the nonzero Lyapunov constants contains this factor, then we have a reversible center (i.e., if we consider that factor to vanish, so must do all other Lyapunov constants, because the origin is a center). This also means that if the origin \emph{can} be a reversible center, then \eqref{eq.2mono.reversible} must appear in the first nonzero Lyapunov constant, because all other constants must either be already zero or vanish under the reversibility condition.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Wrong conditions for the three monomial case}
+
+However, the case with three monomials has some issues that do not appear in the two monomial case. If we did the same procedure as above\footnote{Here we also suppose that $A=1$.}, we would obtain these two conditions
+\begin{align}
+B^\alpha &= (-1)^{\alpha+\beta}\overline B^\alpha,
+\label{eq.wrong.cond1}\\
+C^\alpha &= (-1)^{\alpha+\gamma}\overline C^\alpha.
+\label{eq.wrong.cond2}
+\end{align}
+But these conditions are not exactly equivalent to the full set from Theorem \ref{th.1}. Let us see this with an example.
+
+
+Consider the following non homogeneous system of degree 5
+\begin{align}
+\dot z &= iz + \z^4 + Az\z + Bz\z^4,
+\label{eq.system.exemple}
+\end{align}
+with $A,B\in\C$.  In this case, $\alpha=-5$, $\beta=-1$ and $\gamma=-4$. Thus, the numerators of \eqref{eq.wrong.cond1} and \eqref{eq.wrong.cond2} are
+\begin{align*}
+A^5-\overline A^5=0,\\
+B^5+\overline B^5=0.
+\end{align*}
+
+
+Its first significant center condition is
+\begin{align}
+L_4 &= -\frac{i}{15}(32A^5-32\overline{A}^5+15iAB+15i\overline{A}\overline{B}).
+\end{align}
+If we consider, for example, the first 19 Lyapunov constants for this system, and we solve them for $A$, $\overline A$, $B$ and $\overline B$, we obtain the following sets of solutions:
+\begin{align*}
+\{A&=\overline A, ~B=-\overline B\},\\
+\{A&=\mu\overline A, ~B=(\mu^3+\mu^2+\mu+1)\overline B\},
+\end{align*}
+where $\mu$ is a root of $X^4+X^3+X^2+X+1$. Clearly, the first set of solutions corresponds to the reversibility conditions $A^5-\overline A^5=0$ and $B^5+\overline B^5=0$.
+
+If we solve the two reversibility conditions we will obtain the following sets:
+\begin{align*}
+\{A&=\overline A, ~B=-\overline B\},\\
+\{A&=\overline A, ~B=\nu\overline B\},\\
+\{A&=\mu\overline A, ~B=-\overline B\},\\
+\{A&=\mu\overline A, ~B=\nu\overline B\},
+\end{align*}
+where $\nu$ is a root of $X^4-X^3+X^2-X+1$.
+
+The second set of solutions for the reversibility conditions is not included in neither the first or the second set of center conditions. Also, the \nth{3} set of reversibility solutions does not belong to neither set of center conditions because there is no $\mu$ root of $X^4+X^3+X^2+X+1$ such that $\mu^3+\mu^2+\mu+1=-1$. The same reason implies that the \nth{4} set does not belong to $\{A=\mu\overline A, ~B=(\mu^3+\mu^2+\mu+1)\overline B\}$, because there is no $\mu$ such that $\mu^3+\mu^2+\mu+1=\nu$.
+
+Therefore, there are solutions in \eqref{eq.wrong.cond2} that do not provide reversibility conditions.
+
+
+\begin{observacio}
+The problem lies in the fact that equations \eqref{eq.wrong.cond1} and \eqref{eq.wrong.cond2} do not impose that the $\varphi$ that satisfies each reversibility condition for equations \eqref{eq.rev.1}, \eqref{eq.rev.2} and \eqref{eq.rev.3} is the \emph{same} $\varphi$.
+\end{observacio}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Correct set of conditions for the three monomial case}
+
+In order to find a set of expressions that ensures a common solution for \eqref{eq.rev.1}, \eqref{eq.rev.2} and \eqref{eq.rev.3}, we need to make the following definition. Let $x=\e^{i \varphi}$. Then, the reversibility conditions can be written as
+\begin{align}
+1-x^\alpha&=0,\label{eq.rev1}\\
+A-\overline A x^\beta &=0,\label{eq.rev2}\\
+B-\overline B x^\gamma &=0.\label{eq.rev3}
+\end{align}
+Solving for $x,A,\overline A,B,\overline B$ will provide us with the complete reversibility conditions for three monomial nonlinearities.
+
+Using the previous example, the numerators of these conditions are
+\begin{align*}
+x^5+1 &= 0,\\
+Ax+\overline A &=0,\\
+Bx^4+\overline B &=0.
+\end{align*}
+The solutions for this system of equations are:
+\begin{align*}
+\{A&=\overline A, ~B=-\overline B, ~x=-1\},\\
+\{A&=(\nu^3-\nu^2+\nu-1)\overline A, ~B=\nu\overline B, ~x=\nu\},
+\end{align*}
+where $\nu$ is a root of $X^4-X^3+X^2-X+1$. There are obvious similarities between these solutions and the solutions of the focal values.
+
+Clearly, the first solution set is the same for both systems\footnote{We disregard the value of $x$ in the solutions for reversibility conditions, because it is of no interest for us. We simply use $x$ to ensure that the reversibility conditions are complete.}. The second set must be carefully inspected in order to see if the polynomials are the same. Indeed, take both polynomials
+\begin{align*}
+P_1(X) &= X^4+X^3+X^2+X+1,\\
+P_2(X) &= X^4-X^3+X^2-X+1.
+\end{align*}
+It is obvious that $P_1(-X)=P_2(X)$. Then, the roots must satisfy $\mu=-\nu$, so it is trivial to see that the second solution set for reversibility conditions is exactly the same as the set for the Lyapunov constants.
+\begin{observacio}
+Notice that the first equation is $x^5+1=(x+1)(x^4-x^3+x^2-x+1)$. In general we will obtain as many solution sets as factors in the factorisation of the first condition, because this first equation is independent from the other two.
+\end{observacio}
+Given that there are no other ways of vanishing the set of Lyapunov constants $\{L_4,\dots,L_{19}\}$, we conclude that the poynomial differential equation \eqref{eq.system.exemple} has a reversible center at the origin.
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Considerations about an algorithmic search for centers}
+
+The question that arises from Theorem \ref{th.1} is, as stated in previous sections, find out if the list of possible centers is exhaustive or there are other, unknown, kinds of centers in the family of differential equations \eqref{eq.system}.
+
+Given a differential equation with a 3 monomial nonlinear field, we can use the tools developed by us during this work in order to detect whether it belongs to one of the simpler classes of centers given by Theorem \ref{th.1} (a), (b) or (d). If it does not, we will have to start the computation of Lyapunov constants for this complex field, until we get a complete set of conditions for $A,\overline A,B$ and $\overline B$ for which the origin is a center (the solution of a system of equations formed by the Lyapunov constants). Given these sets of solutions, we then could compare them to the sets spawned by the reversibility conditions, to see if they all match or if there is any solution for the Lyapunov constants that does not imply reversibility. In the latter case, this would mean that the list given by Theorem \ref{th.1} is not exhaustive because there are new kinds of centers not acknowledged by the theorem.
+
+One problem for this approach is that, unlike in \textcite{Gasull2016}, we cannot rely on identifying a ``visual'' condition stored in the first significant Lyapunov quantity, because the shape of the polynomials that result in reversibility conditions is not as predictable as in \eqref{eq.2mono.reversible}. Therefore, we can only make decisions based on solution sets, for which we requiere to compute \emph{enough} Lyapunov constants. How many constants are required to get a complete solution set is not known 	\emph{a priori}, which introduces a possible computational issue that can only be mitigated by setting a genereous threshold in the number of Lyapunov constants computed for each case.
+
+Moreover, after having computed enough Lyapunov constants, there is still the issue of how to programmatically identify that the solution sets are equal or different for Lyapunov constants and reversibility conditions. For obvious reasons, the possibility of manually checking every case must be discarded, so a method must be developed that decides whether the solutions are equivalent or not.
+
+The development of this method is not the aim of this Masters Thesis, but will be a problem tackled in future research based on the results and tools developed in this work.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Preliminary results for systems of degree 3}
+
+As an exemplification of the work that is pending to do to close the 3 monomial problem, we inspected all the degree 3 possible systems with three monomial nonlinearities in which the first monomial is non resonant (i.e., we can assume the first coefficient to be 1) in order to check Theorem \ref{th.1}. The total number of systems analysed is 174.
+
+Consider the following system:
+\begin{align}
+\dot z &= iz+\z^2+A\z^3+Bz\z
+\end{align}
+The first significant Lyapunov constant for this system is
+\begin{align*}
+L_{2}&=\frac{1}{3}(B\overline A+A\overline B)+\frac{2i}{3}(B^3-\overline B^3).
+\end{align*}
+The following constant is
+\begin{align*}
+L_3&=-\frac {i}{576}\left(-38i\overline{A}B^3- 38iA\overline{B}^3 +38iAB^3 -108iA\overline{B}^4 +38i\overline{A}\overline{B}^3 -108i\overline{A}B^4 +108iAB^4\right.\\
+&+108i \overline{A}\overline{B}^4 +792iAB^2 -372iA\overline{B} +792i\overline{A}\overline{B}^2 -372iB\overline{A} +228iAB\overline{B}^2 +228i\overline{A}B^2\overline{B}\\
+&-540iAB^3\overline{B} -108iAB\overline{B}^3 -108i\overline{A}B^3\overline{B} -540i\overline{A}B\overline{B}^3+19A^2\overline{B} -19\overline{A}^2B -270A^2\overline{B}^2\\
+&\left.+270\overline{A}^2B^2 +19A\overline{A}B -19A\overline{A}\overline{B} +54A\overline{A}B^2 -54A\overline{A}\overline{B}^2 +54A^2B\overline{B} -54\overline{A}^2B\overline{B}\right), 
+\end{align*}
+and the rest are far too big to be included in this document. The Lyapunov constants that do not completely reduce in this field are $L_2,L_3,L_4,L_5$ and $L_6$. Solving this system for $A,B$ we obtain:
+\begin{align*}
+\{A&=-\overline A,~B=\overline B\},\\
+\{A&=-\overline A \mu_1,~B=\overline B \mu_1\},
+\end{align*}
+where $\mu_1$ is a root of $P_1(X)=X^2+X+1$.
+
+On the other hand, the solution for the reversible center conditions \eqref{eq.rev1}, \eqref{eq.rev2}, and \eqref{eq.rev3} is:
+\begin{align*}
+\{A&=-\overline A,~B=\overline B,~x=-1\},\\
+\{A&=-\overline A(\mu_2-1),~B=\overline B(\mu_2-1), ~x=\mu_2\},
+\end{align*}
+where $\mu_2$ is a root of $P_2(X)=X^2-X+1$. In this case, notice how $P_1(X-1)=P_2(X)$. Hence, both solution sets are equivalent. Therefore, this system has a reversible center at the origin.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Some notions on Darboux integrability}
+
+In order to provide some additional insight in the systems that will appear below, we need to introduce some definitions and a main result in the field of Darboux integrability of complex polynomial systems of differential equations. These are extracted from \textcite{Dumortier2006}.
+
+We already explained in Section \ref{sec.firstint} the definition of an integrable system. The existence of a first integral is not easy to prove in general, and the concept of \emph{invariants} provide a weaker but also useful information. Recall the definition of the associated vector field $Z$ of a complex polynomial system \eqref{eq.vectorfield.complex}.
+\begin{definicio}
+Let $U\subset\C^2$ be an open set. We say that an analytic function $H(z,\z,t):U\times\C\to\C$ is an \emph{invariant} of the polynomial vector field $Z$ on $U$ if $H(z,\z,t)=h$ for some constant $h$ for all values of $t$ for which the solution $(z(t),\z(t))$ is defined and contained in $U$.
+\end{definicio}
+Notice that a time-independent invariant is a first integral.
+
+\begin{definicio}
+Let $U\subset\C^2$ be an open subset and $F:U\to\C$ be an analytic function which is not identically zero on $U$. The function $F$ is an \emph{integrating factor} of the complex polynomial system \eqref{eq.system.complex} on $U$ if one of the three following equivalent conditions holds on $U$:
+\begin{align}
+\pd{F\dot z}{z}=-\pd{F\dot\z}{\z},\quad\div(F\dot z,F\dot\z)=0,\quad ZF=-F\div(\dot z,\dot\z).
+\end{align}
+If a system has an integrating factor, one can find a first integral of the form
+\begin{align}
+H(z,\z)=\int F(z,\z)\dot z\dd\z+h(z)
+\end{align}
+for $h$ such that $\partial H/\partial z=-F\dot\z$.
+\end{definicio}
+
+\begin{definicio}
+Let $f\in\C[z,\z]$, $f$ not identically zero. The algebraic curve $f(z,\z)=0$ is an \emph{invariant algebraic curve} of \eqref{eq.system.complex} if
+\begin{align}
+Zf=\dot z\pd{f}{z}+\dot\z\pd{f}{\z}=Kf
+\label{eq.invalg}
+\end{align}
+for some polynomial $K\in\C[z,\z]$, which is called \emph{cofactor} and has degree at most $m-1$. If $f$ is irreducible in the ring $\C[z,\z]$, then $f=0$ is an \emph{irreducible invariant algebraic curve} of the system.
+\end{definicio}
+
+\begin{definicio}
+Let $h,g\in\C[z,\z]$, and assume $h$ and $g$ are relatively prime in the ring $\C[z,\z]$ or that $h\equiv1$. Then, the function $\exp(h/g)$ is called \emph{exponential factor} of \eqref{eq.system.complex} if for some \emph{cofactor} $K\in\C[z,\z]$ of degree at most $m-1$ it satisfies equation \eqref{eq.invalg}.
+\end{definicio}
+
+
+If $S(z,\z)=\sum_{j+k=0}^{m-1}a_{jk}z^j\z^k\in\C_{m-1}[z,\z]$ (i.e. the subring of $\C[z,\z]$ of polynomials of degree at most $m-1$), it has $m(m+1)/2$ coefficients. We identify the linear vector space $\C_{m-1}[z,\z]$ with $\C^{m(m+1)/2}$ through the isomophism
+\begin{align*}
+S\to(a_{00},a_{10},a_{01},\dots,a_{m-1,0},a_{m-2,1},\dots,a_{0,m-1}).
+\end{align*}
+\begin{observacio}
+The isomorphism $\C_{m-1}[z,\z]\to\C^{m(m+1)/2}$ is the same that we have used in Section \ref{sec.pol2vec} to develop the vectorised polynomial operations for our algorithm of computation of the Lyapunov constants.
+\end{observacio}
+
+\begin{definicio}
+We say that $r$ points $(z_\ell,\z_\ell)\in\C^2$ for $\ell=1,\dots,r$ are \emph{independent} with respect to $\C_{m-1}[z,\z]$ if the intersection of the $r$ hyperplanes 
+\begin{align*}
+\sum_{j+k=0}^{m-1}z_{\ell}^j\z_{\ell}^ka_{jk}=0,\quad\ell=1,\dots,r,
+\end{align*}
+in $\C^{m(m+1)/2}$ is a linear subspace of dimension $[m(m+1)/2]-r$.
+\end{definicio}
+
+
+Finally, we state the main result of the Darboux Theory of integrability for complex polynomial systems:
+\begin{theorem}
+\label{th.darboux}
+Suppose that a $\C$-polynomial system \eqref{eq.system.complex} of degree $m$ admits $p$ irreducible invariant algebraic $f_j=0$ with cofactors $K_j$ for $j=1,\dots,p$, $q$ exponential factors $\exp(g_k/h_k)$ with cofactors $L_k$ for $k=1,\dots,q$ and $r$ independent singular points $(z_\ell,\z_\ell)\in\C^2$ such that $f_j(z_\ell,\z_\ell)\ne0$ for $j=1,\dots,p$ and for $\ell=1,\dots,r$.
+\begin{enumerate}[(i)]
+\item
+There exist $\lambda_j,\mu_k\in\C$ not all zero such that $\sum_{j=1}^p \lambda_jK_j+\sum_{k=1}^q \mu_kL_k=0$, if and only if the (multivaluated) function
+\begin{align}
+f_1^{\lambda_1}\cdots f_p^{\lambda_p}\left(\exp\left(\frac{g_1}{h_1}\right)\right)^{\mu_1}\cdots\left(\exp\left(\frac{g_q}{h_q}\right)\right)^{\mu_q}
+\label{eq.darboux}
+\end{align}
+is a first integral of system \eqref{eq.system.complex}
+\item
+If $p+q+r\ge[m(m+1)/2]+1$ then there exist $\lambda_j,\mu_k\in\C$ not all zero such that $\sum_{j=1}^p \lambda_jK_j+\sum_{k=1}^q \mu_kL_k=0$.
+\item
+If $p+q+r\ge[m(m+1)/2]+2$, then system \eqref{eq.system.complex} has a rational first integral, and consequently all trajectories of the system are contained in invariant algebraic curves.
+\item
+There exist $\lambda_j,\mu_k\in\C$ not all zero, such that $\sum_{j=1}^p \lambda_jK_j+\sum_{k=1}^q \mu_kL_k=-\div(\dot z,\dot\z)$, if and only if function \eqref{eq.darboux} is an integrating factor of system \eqref{eq.system.complex}.
+\item
+If $p+q+r=m(m+1)/2$ and the $r$ independent singular points are weak (i.e., $\div(\dot z,\dot\z)=0$ at $(z_\ell,\z_\ell)$), then function \eqref{eq.darboux} is a first integral if $\sum_{j=1}^p \lambda_jK_j+\sum_{k=1}^q \mu_kL_k=0$, or an integrating factor if $\sum_{j=1}^p \lambda_jK_j+\sum_{k=1}^q \mu_kL_k=-div(\dot z,\dot \z)$, under the condition that not all $\lambda_j,\mu_k\in\C$ are zero.
+\item
+If there exist $\lambda_j,\mu_k\in\C$ not all zero such that $\sum_{j=1}^p \lambda_jK_j+\sum_{k=1}^q \mu_kL_k=-s$ for some $s\in\C\setminus\{0\}$, then the (multivalued) function
+\begin{align*}
+f_1^{\lambda_1}\cdots f_p^{\lambda_p}\left(\exp\left(\frac{g_1}{h_1}\right)\right)^{\mu_1}\cdots\left(\exp\left(\frac{g_q}{h_q}\right)\right)^{\mu_q}\exp(st)
+\end{align*}
+is an invariant of system \eqref{eq.system.complex}.
+\end{enumerate}
+\end{theorem}
+ 
+This theorem provides many tools that allow to study a system and find a first integral should it be integrable.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Non classified systems with non reversible centers}
+
+
+As predicted in a previous observation, there are several systems that fall outside of the classification of Theorem \ref{th.1}. In the remaining of this section we will provide a complete list of the systems found to have solutions for the system of Lyapunov constants that do not belong to the set of reversible conditions, along with their center candidates and a small study for some of them.
+
+The complete list of the ``offending'' systems is:
+\begin{enumerate}[(I)]
+\item
+$\dot z = iz+\z^2+A\z^3+Bz^2\z$ (one Hamiltonian center),%3
+\item
+$\dot z = iz+\z^3+A\z^2+Bz^2\z$ (one Hamiltonian center),%31
+\item
+$\dot z = iz+z\z+Az\z^2+Bz^2\z$ (one not classified center),%70
+\item
+$\dot z = iz+z\z^2+Az\z+Bz^2\z$ (one not classified center),%99
+\item
+$\dot z = iz+\z^2+Az\z^2+Bz^3$ (three reversible, one Hamiltonian, and one Darbouxian centers),%13
+\item
+$\dot z = iz+\z^3+Az\z+Bz^2$ (four reversible, and one Hamiltonian centers),%35
+\item
+$\dot z = iz+\z^3+Az\z^2+Bz^3$ (two reversible, and one Hamiltonian centers),%42
+\item
+$\dot z = iz+z^2+Az\z^2+Bz^3$ (one reversible, and one Darbouxian centers),%133
+\item
+$\dot z = iz+z^3+Az\z+Bz^2$ (two reversible, and one not classified centers),%157
+\end{enumerate}
+with $A,B\in\C$. Notice that since $A$ and $B$ are parameters (although not \emph{free} parameters, since the center conditions often tie their values), the systems where the coefficients of the last two monomials are swapped are equivalent to these ones.
+
+\begin{observacio}
+Theorem \ref{th.1} (d) fails to predict the existence of all these Hamiltonian and Darbouxian centers found. Also, work remains to be done in order to identify which type of centers the cases (III), (IV) and (IX) are.
+\end{observacio}
+
+In the following subsections we will break down some of these cases, in order to give a notion of the difficulty that lies in completing the general 3 monomial case for any degree. The computations of Lyapunov constants and center candidates, and also the reversibility conditions, for each of the systems considered can be parallelized using PBala and every execution automatised easily using the tools developed in this Masters Thesis. However, the study of the centers that are not included in some of the four categories of Theorem \ref{th.1}  must be done in an individual basis as of now, because there are no theoretical results that show other general conditions that would serve to classify such cases. Therefore, the remaining job of studying these cases and extrapolating results that would aid in completing the characterisation is a huge task that will only be hinted at in the following pages of this work.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Cases (I), (II), (VI) and (VII)}
+The solution of the system formed by the first eleven Lyapunov constants provides us with the center candidates the case of degree 3. For case (I):
+\begin{align*}
+\dot z &= iz+\z^2+A\z^3+Bz^2\z,\\
+L_1 &= B+\overline B,\quad L_2=\cdots=L_{11}=0,\\
+c_1 &= \{B=-\overline B\}.
+\end{align*}
+The fact that all the Lyapunov constants are zero except for the first one means that they completely reduce in the Gröbner basis formed by $\langle L_1\rangle$. From now on, we will not distinguish whether a Lyapunov constant is actually zero or if it completely reduces with respect to the previous non zero constants.
+
+The condition $c_1$ is the only center candidate for this system, and it provides a Hamiltonian center. This can be checked by the following simple computation: write $\z^2+A\z^3+Bz^2\z=P+iQ$, with $P,Q\in\R[x,y]$, and take $H=\int P\dd y+h(x)$, with $h(x)$ such that $\partial H\partial x=Q$. Then if $H$ satisfies $H_xP+H_yQ=0$, it is a Hamiltonian function of the system and thus the center is of Hamiltonian kind.
+
+Notice that Theorem \ref{th.1} does not predict the existence of such a Hamiltonian system, since we cannot take common factor $z^k$ for any $k$ for the three monomials in this system, as requires Theorem \ref{th.gagito}. However, the condition that the coefficient of a resonant monomial must be imaginary, which is predicted by the theorem, is also fulfilled here.
+
+For case (II) we have the Lyapunov constants and center condition:
+\begin{align*}
+\dot z &= iz+\z^3+A\z^2+Bz^2\z,\\
+L_1 &= B+\overline B,\quad L_2=\cdots=L_{11}=0,\\
+c_1 &= \{B=-\overline B\}.
+\end{align*}
+This case is also Hamiltonian. Both these two previous cases show common traits that might allow us to find out a general pattern for these kind of centers in order to add it to Theorem \ref{th.1}, but this work is left to future research based on this Masters Thesis.
+
+Case (VI) has $L_1=i(AB-\overline{A}\overline{B})$, and $L_3,L_4,L_5,L_5,L_9\ne0$ too big to fit the document. The center conditions are:
+\begin{align*}
+\dot z &= iz+\z^3+Az\z+Bz^2,\\
+c_1&=\left\{A=-2\overline B,~B=-\frac{1}{2}\overline A\right\},\\
+c_{2,3,4,5}&=\left\{A=\mp \frac{\sqrt{2}}{2}(1\pm i)\overline A,~B=\mp\frac{\sqrt{2}}{2}(1\mp i)\overline B\right\}.
+\end{align*}
+Centers $c_2,c_3,c_4$ and $c_5$ are reversible. The remaining case, $c_1$, is Hamiltonian.
+
+
+Case (VII) has the following center conditions:
+\begin{align*}
+\dot z &= iz+\z^3+Az\z+Bz^2,\\
+L_2&=i(AB-\overline{A}\overline{B}),\\
+L_3&=\frac{3}{8}(A^2+\overline A^2)+(A\overline B+\overline AB)-\frac{3}{8}(B^2+\overline B^2),\\
+L_4&=0,\\
+L_5&=-\frac{2}{27}(B^3\overline B+B\overline B^3)+\frac{1}{18}(A\overline B+\overline AB)+\frac{1}{6}(B^2+\overline B^2)\\
+&-\frac{1}{54}(AB\overline B^2+\overline AB^2\overline B)-\frac{1}{162}(AB^3+\overline A\overline B^3),\\
+L_6&=\cdots=L_{11}=0.
+\end{align*}
+Its center candidates at the origin are
+\begin{align*}
+c_1&=\left\{A=-3\overline B,~B=-\frac{1}{3}\overline A\right\},\\
+c_{2,3}&=\{\pm i\overline A,~B=\mp i\overline B\},
+\end{align*}
+which are two reversible centers ($c_2$ and $c_3$), and a Hamiltonian one ($c_1$).
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Case (V)}
+The non zero Lyapunov constants for case (V), $\dot z = iz+\z^2+Az\z^2+Bz^3$, are
+\begin{align*}
+L_2&=i(AB-\overline A\overline B),\\
+L_4&=\frac{2}{3}(A^3+\overline A^3)+\frac{8}{3}(AB\overline B+\overline AB\overline B) -\frac{1}{2}(A^2B-A\overline A B-A\overline A\overline B+\overline A^2\overline B)\\
+&+(A^2\overline B+\overline A^2B)+(B^3+\overline B^3)-\frac{8}{3}(AB^2+A\overline B^2+\overline AB^2+\overline A \overline B^2),\\
+L_5&=\frac{7}{16}(B^3+\overline B^3)+\frac{7}{24}(AB\overline B+\overline AB\overline B-AB^2-A\overline B^2-\overline AB^2-\overline A\overline B^2)\\
+&-\frac{7}{48}(A^2\overline B+\overline A^2 B)+\frac{7}{96}(A^2B\overline A^2\overline B-A\overline A B-A\overline A\overline B).
+\end{align*}
+This system has several center candidates:
+\begin{align*}
+c_1&=\left\{A=\overline B,~B=\overline A\right\},\\
+c_2&=\left\{A=-\overline A,~B=-\overline B\right\},\\
+c_3&=\left\{A=-3\overline B,~B=-\frac{1}{3}\overline A\right\},\\
+c_{4,5}&=\left\{A=\frac{1}{2}\left(1\mp i\sqrt{3}\right)\overline A,~B=\frac{1}{2}\left(1\pm i\sqrt{3}\right)\overline A\right\}.
+\end{align*}
+Centers $c_2,c_4$ and $c_5$ are reversible centers. The candidate $c_3$ is a Hamiltonian center. The only remaining center candidate is $c_1$.
+
+The system with $c_1$ is written as
+\begin{align}
+\dot z &= iz+z^2+Bz^3+\overline B z\z^2.
+\end{align}
+It has four invariant straight lines $F=1+rx+sy$, with the slope $r$ solution of the degree 4 polynomial:
+\begin{align}
+P(X)&=X^4+(4\Im(B)-3)X^2+8\Re(B)X-4\Re(B)^2.
+\label{eq.pol.cas5}
+\end{align}
+There exists a value of $B$ such that $P(X)$ has all four real solutions: $B=\frac{1}{5}(3+\frac{1}{10}i)$. Thus, in this case we can solve for $r,s$:
+\begin{align*}
+&{}\left\{r=1,~s=-\frac{1}{5}\right\},\quad\left\{r=\frac{3}{5},~s=-1\right\},\\
+&{}\left\{r=\frac{2}{5}(-2\pm\sqrt{19}),~s=\frac{1}{5}(3\mp\sqrt{19})\right\}.
+\end{align*}
+In this case, the cofactors for each invariant line are
+\begin{align*}
+K_1&=\frac{6}{5}x^2+\frac{34}{25}xy-\frac{6}{5}y^2-\frac{1}{5}x-y,\\
+K_2&=\frac{6}{5}x^2+\frac{34}{25}xy-\frac{6}{5}y^2-x-\frac{3}{5}y,\\
+K_3&=-\frac{\sqrt{19}}{5}x-\frac{2\sqrt{19}}{5}y+\frac{6}{5}x^2+\frac{34}{25}xy-\frac{6}{5}y^2+\frac{3}{5}x+\frac{4}{5}y,\\
+K_4&=\frac{\sqrt{19}}{5}x+\frac{2\sqrt{19}}{5}y+\frac{6}{5}x^2+\frac{34}{25}xy-\frac{6}{5}y^2+\frac{3}{5}x+\frac{4}{5}y,
+\end{align*}
+and there exist $\lambda_1,\lambda_2,\lambda_3,\lambda_4\in\R$ such that
+\begin{align*}
+\lambda_1K_1+\lambda_2K_2+\lambda_3K_3+\lambda_4K_4+\div(P,Q)=0,
+\end{align*}
+where $P,Q\in\R[x,y]$ are the real polynomials of the system with $B=\frac{1}{5}(3+\frac{1}{10}i)$, such that
+\begin{align*}
+P+iQ&=z^2+\frac{1}{5}\left(3-\frac{1}{10}i\right)z\z^2+\frac{1}{5}\left(3+\frac{1}{10}i\right)z^3.
+\end{align*}
+Hence, in this particular case where everything is real, applying Theorem \ref{th.darboux} (iv) we can assure the existence of a first integral for the system. Therefore, this case is a Darbouxian center when $B=\frac{1}{5}(3+\frac{1}{10}i)$.
+
+The more general case is harder to treat, since one has to work with the formal possibly complex roots of the degree 4 polynomial \eqref{eq.pol.cas5}, but the conclusion should also be that there exist an integrating factor of the system so the center is of Darboux type.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Case (VIII)}
+This case, $\dot z = iz + z^2+Az\z^2+Bz^3$, with significant Lyapunov constants
+\begin{align*}
+L_2&=i(AB-\overline A\overline B),\\
+L_4&=-\frac{1}{3}(A+\overline A)(B-\overline A)(A-\overline B),
+\end{align*}
+has one reversible center, $c_1$, and one which is not Hamiltonian:
+\begin{align*}
+c_1 &= \{A=-\overline A,~B=-\overline B\},\\
+c_2 &= \{A=\overline B,~B=\overline A\}.
+\end{align*}
+
+For $c_2$, the system can be written as
+\begin{align*}
+\dot z &= iz + z^2+Bz^3+\overline Bz\z^2.
+\end{align*}
+In this case, as in (V) there are also 4 invariant straight lines with slope that is solution of a degree 4 biquadratic polynomial:
+\begin{align*}
+P(X)&=X^4+(4\Im(B)+1)X^2-4\Re(B)^2.
+\end{align*}
+It can be found that the four (complex) invariant lines have cofactors such that
+\begin{align*}
+\lambda_1K_1+\lambda_2K_2+\lambda_3K_3+\lambda_4K_4=0,
+\end{align*}
+for $\lambda_{3},\lambda_4\in\C$ and $\lambda_1=f(\lambda_3,\lambda_4),\lambda_2=g(\lambda_3,\lambda_4)$ complex functions of $\lambda_3,\lambda_4$. Thus, by Theorem \ref{th.darboux} (i), we have a first integral and the center is Darbouxian.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Cases (III), (IV),  and (IX)}
+Systems (III) and (IV) share the same center condition as (I) and (II), because their only non zero Lyapunov constant is $L_1=B+\overline B$. However, the centers that arise are not Hamiltonian:
+\begin{align*}
+\dot z &= iz+z\z+Az\z^2+Bz^2\z,\\
+\dot z &= iz+z\z^2+Az\z+Bz^2\z,\\
+c_1 &= \{B=-\overline B\}.
+\end{align*}
+
+Finally, case (IX) has the following center conditions:
+\begin{align*}
+\dot z &= iz + z^3+Az\z^2+Bz^2,\\
+L_1 &=i(AB-\overline A\overline B),\\
+L_2 &=-2(A^2+\overline A^2)-(A\overline B+\overline AB),
+\end{align*}
+and $L_3=\cdots=L_{11}=0$. The center candidates are
+\begin{align*}
+c_1 &= \{A=-\frac{1}{2}\overline B,~B=-2\overline A\},\\
+c_{2,3} &= \{A=\pm i\overline A,~B=\mp i\overline B\}.
+\end{align*}
+Centers $c_2$ and $c_3$ are reversible, and center $c_1$ is not Hamiltonian. For $c_1$, there are no invariant algebraic straight lines, so in order to apply Theorem \ref{th.darboux} we should look for higher order algebraic invariants.
+
+These three last cases will not be classified in this work and are left to future development of this research.
+
+

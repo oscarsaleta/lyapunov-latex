@@ -1,0 +1,268 @@
+% !TeX root = ../TFM.tex
+\chapter{Recovering previous research results}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Weak foci of high order and cyclicity \parencite{Liang2016}}
+
+In their paper \emph{Weak foci of high order and cyclicity}, \textcite{Liang2016} found a family of systems with two non-homogeneous monomial nonlinearities that present the highest order of cyclicity currently known for explicit non-homogeneous systems of odd degree: $(n-1)^2$. Also remarkable is the fact that this family presents the same order of cyclicity for even and odd degrees, which is uncommon (most of the explicit systems with odd degree that have been found present a cyclicity order around half of their even counterparts (see \nptextcite{Gasull2016,Qiu2009} for some examples that we will treat in this chapter).
+
+One of the main results of the paper states the following:
+\begin{theorem}[Theorem 1.3, \nptextcite{Liang2016}]
+For every integer $3\le n\le 100$, the origin of equation
+\begin{align}
+\dot z &= iz + \z^{n-1} + z^n
+\end{align}
+is a stable (unstable) weak focus of order $(n-1)^2$ when $n$ is even (odd).
+\end{theorem}
+This theorem is proved by computing all these cases and checking that this is indeed true.
+
+We wanted to put our algorithm (combined with the vectorised polynomial operations and the SPMD parallelization system, both developed by us) to test by recovering their results. However, even for our PARI/GP implementation with vectorised operations, our performance is surely lower than the one of the algorithm from \textcite{Liang2016}, because the authors developed an ad-hoc algorithm (as opposed to our general purpose one) and also used PARI/GP for their computations. Therefore we performed the computations for only a subset of all the cases of the paper: from $n=3$ to $n=63$, because higher degrees proved to yield too long executions and \emph{every degree computed was in perfect agreement with the result from the paper}.
+
+For $n=3$, the system
+\begin{align*}
+\dot z &= iz +\z^2+z^3
+\end{align*}
+has its first non-zero Lyapunov constant of order 4, which agrees with the theorem that says that the order of this weak focus is $(n-1)^2$.
+\begin{align*}
+L_4 &= 2.
+\end{align*}
+
+\begin{observacio}
+Notice that in this case the Lyapunov constants are rational numbers, because there are no parameters in our systems. This speeds the computation compared to the case with parameters and allows us to compute systems of really high orders (compared to the case with 4 parameters, in which computing the Lyapunov constants for degree 7 is already a huge computational task).
+\end{observacio}
+
+The highest order computed was $n=63$:
+\begin{align}
+\dot z &= iz+\z^{62}+z^{63}.
+\end{align}
+Its first non-zero Lyapunov constant is $L_{3844}$, and $62^2=3844$. This constant is a fraction with a 2369 digit numerator and a 2168 digit denominator, therefore we will not show it in this work (its floating point approximation is $1.30343\times10^{201}$). The computation time of this last case was 36h and 21min, taking up to 25.3 GB of RAM memory. The reason why the authors were able to compute up to such high degrees is, as we commented above, that they used a highly optimised \emph{ad-hoc} algorithm specialised for this particular problem.
+
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Center problem for systems with two monomial nonlinearities \parencite{Gasull2016}}
+
+This is the paper that has influenced most the present work. The authors treat the problem of characterising all the possible centers found within the following family of planar differential equations:
+\begin{align}
+\dot z  &= iz + Az^k\z^\ell+Bz^m\z^n,
+\label{eq.2mono}
+\end{align}
+where $A,B\in\C$, $k,\ell,m,n\in\N$ and $(k,\ell)\ne(m,n)$. In the following chapter we attempt to get a similar result, generalising the family to 3 monomial nonlinearities, which adds some considerations for reversible centers that we will discuss later on.
+
+Below is the theorem which presents the characterization for all the centers at the origin for the equation \eqref{eq.2mono}, giving all the possible cases depending on both the exponents $k,\ell,m,n$ and the coefficients $A,B$.
+
+\begin{theorem}[Theorem 1 of \nptextcite{Gasull2016}]
+\label{th.2mono}
+The origin of equation \eqref{eq.2mono} is a center when one of the following (nonexclusive) conditions hold:
+\begin{enumerate}[(a)]
+\item
+$k=n=2$ and $\ell=m=0$ (quadratic Darboux centers),
+\item
+$\ell=n=0$ (holomorphic centers),
+\item
+$A=-\overline A\e^{i \alpha \varphi}$ and $B=-\overline B\e^{i \beta \varphi}$ for some $\varphi\in\R$ (reversible centers),
+\item
+$k=m$ and 	$(\ell-n)\alpha\ne0$ (Hamiltonian or new Darboux centers).
+\end{enumerate}
+\end{theorem}
+
+In this paper, aside from characterising the centers for the family \eqref{eq.2mono}, the authors introduce the following proposition:
+\begin{proposition}[Proposition 10 of \nptextcite{Gasull2016}]
+Consider the differential equations
+\begin{align}
+\dot z &= iz+z^d+C_1z^{d-1}\z,\\
+\dot z &= iz+z^{d-1}\z+C_2z\z^{d-1}.
+\label{eq.gintor}
+\end{align}
+Then there exist values of $C_1$ and $C_2$ such that the origin is a weak focus of order $(d^2+d-2)/2$ for any odd $5\le d\le89$ and of order $d^2-d$ for any even $\le34$.
+\end{proposition}
+
+We used the cases $d=5$ and $d=15$ to exemplify the case of equation \eqref{eq.gintor} from the proposition above. For $d=5$, the two first nonzero Lyapunov constants found are:
+\begin{align*}
+L_{10}&=\frac{1}{16}(C_2+\overline{C}_2)(3C_2\overline{C}_2-4),\\
+L_{14}&=\frac{5245}{2}(C_2+\overline{C}_2).
+\end{align*}
+Also, the following Lyapunov constants are found to completely reduce with respect to the Gröbner basis formed by these two. Thus, for $C=\frac{4}{3}\overline{C}_2^{-1}$ we have $L_{10}=0$ and $L_{14}\ne0$, which means that we obtain a weak focus of order $14=(5^2+5-2)/2$, as the proposition says.
+
+In the case $d=15$, we have these two first significant center conditions:
+\begin{align*}
+L_{105}&=\frac{54431}{12811298899230720} (4253459678612784C_2\overline{C}_2+206968225791341)\\
+&{}(C_2^2+\overline{C}_2^2)(C_2^4-C_2^2\overline{C}_2^2+\overline{C}_2^4),\\
+L_{119}&=-\frac{3}{32}(C_2^2+\overline{C}_2^2)(3725C_2^4+28278C_2^2\overline{C}_2^2+3725\overline{C}_2^4).
+\end{align*}
+And the following Lyapunov constants are either 0 or they completely reduce in a Gröbner basis formed by these two. Clearly, if $C_2+\overline{C}_2=0$ we have a reversible center (see Section \ref{sec.reversible}). However, the other solutions for $C_2$ in $L_{105}$ do not vanish $L_{119}$:
+\begin{align*}
+C_2 &= -\frac{206968225791341}{4253459678612784}\overline{C}_2^{-1},\\
+C_2 &= \pm\frac{\overline{C}_2}{2}\sqrt{2\pm2i\sqrt{3}}.
+\end{align*}
+Therefore, this system has a focus of order $119=(15^2+15-2)/2$.
+
+
+
+
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{On the focus order of planar polynomial differential equations \parencite{Qiu2009}}
+
+In  their work, \textcite{Qiu2009} showcase an interesting property of homogeneous planar polynomial differential equations, which is the fact that they usually ``skip'' orders of Lyapunov constants. Take the following equation as an example:
+\begin{align}
+\dot z &= iz + az^3\z+ibz^2\z,
+\end{align}
+with $a,b\in\R$. This system has the following first 3 nonzero Lyapunov constants:
+\begin{align*}
+L_3 &= -2ab,\\
+L_6 &= 64ab^3+54a^3b,\\
+L_9 &= -3616ab^5 - 6504a^3b^3 - 3038a^5b,\\
+L_{12} &= 350436ab^7 + \frac{8409487}{9}a^3b^5 + \frac{7891651}{9}a^5b^3 + 289152a^7b.
+\end{align*}
+As can be seen from these computations, focal values ``skip'' three orders each time in which they are exactly zero.
+
+This property has been used by the authors of the paper to find a family of polynomial systems that make high order weak foci, because they were able to obtain a family which has every Lyapunov constant equal to zero up to a certain order, and then solving for a single parameter in this first nonzero Lyapunov constant they are able go further for several orders.
+
+The main result of the work of Qiu and Yang is the following proposition.
+\begin{proposition}[Proposition 1 of \nptextcite{Qiu2009}]
+\label{prop.qiuyang}
+For $n\in\{4,6,8,10,12,14,16,18\}$, the system
+\begin{align}
+\dot z &= iz -\frac{n}{n-2}z^n+z\z^{n-1}+i\tau_n\z^n,
+\end{align}
+where $\tau_n$ is a fixed real number, has a focus at the origin with the focus order of $n^2+n-2$.
+
+For $n\in\{3,5,7,9,11,13,15,17,19\}$, the following system
+\begin{align}
+\dot z &= iz + \frac{n}{n-2}z^n+z\z^{n-1}+(1+i \tau)\z^n,
+\end{align}
+where $\tau$ is any transcendental number, has a focus at the origin with the focus order of $(n^2+n-2)/2$.
+\end{proposition}
+
+\begin{observacio}
+Notice that this proposition gives a family of odd degree systems with a focus of lower order than the 2 monomial family from \textcite{Gasull2016} but higher order for even polynomial planar systems.
+\end{observacio}
+
+For some reason, probably related to available computing power and time of execution, the authors only check up to degrees 19 and 20. We were able to pick up from there and check up to $n=40$ for the even systems and to $n=59$ for odd ones.
+
+The code snippet in Listing \ref{lst.qiuyang.even} shows our algorithm for performing the even cases. The file \texttt{polops.gp} is our GP library where we have implemented all the functions that compute Lyapunov constants using the vectorised operations. This program is prepared to be executed through PBala (notice that it takes the value of $n$ from a vector, \texttt{taskArgs}, which is passed to the script by the PBala software, which has read it from an input file).
+
+
+
+For $n=20$, the first nonzero Lyapunov constant is
+\begin{align*}
+L_{399} &= A \tau^{21} - B \tau^{19},
+\end{align*}
+with $A,B\in\Q$ fractions of more than 220 digits in both numerator and denominator. We can solve for $\tau$ and then we obtain the following new first significant center condition:
+\begin{align*}
+L_{418} &\approx 16303090276776173.952.
+\end{align*}	
+Notice that $418=20^2+20-2$, as expected. The same can be said for all cases from $n=22$ to $n=40$, being the latter the last one computed, although the computation of all cases from $n=20$ to $n=40$ took only around 2.5h making use of PBala and the vectorised operations developed. To round off, we tease the results for $n=40$:
+\begin{align*}
+L_{1599} &= A \tau^{41} - B \tau^{39},\\
+\tau &\approx 0.275,\\
+L_{1638} &\approx 41432785440135659008514752319048447.609.
+\end{align*}
+It is worth noticing that no computation was made in floating point arithmetics, but this is our only possible way of fitting such big rational numbers in this document. In fact, $A,B\in\Q$ for $n=40$ are rational numbers with numerators and denominators of more than 800 digits each.
+
+
+The odd case is simpler, because it is not needed to solve any equations, neither to go further in the order of the focus, because the main point in this family of odd systems is that the first nonzero Lyapunov constant \emph{must not} be solvable for the system to have a focus and not a center (see Listing \ref{lst.qiuyang.odd} at the end of this section).
+
+For $n=21$, the focus is of order 230:
+\begin{align*}
+L_{230} &= \lambda_0 \tau^{12}-\lambda_1\tau^{10}+\lambda_2\tau^8-\lambda_3\tau^6- \lambda_4\tau^4 + \lambda_5\tau^2-\lambda_6,
+\end{align*}
+where $\lambda_k\in\Q$ for $k=0,\dots,6$. Clearly, if $\tau$ is transcendental, it cannot be a root of $L_{230}$, so the focus is of order $230=(21^2+21-2)/2$.
+
+The case $n=59$ also agrees with Proposition \ref{prop.qiuyang}, because the order of the first significant Lyapunov constant is $1769=(59^2+59-2)/2$:
+\begin{align*}
+L_{1769} &= \sum_{k=0}^15 \lambda_k \tau^{30-2k}.
+\end{align*}
+Clearly, for any $\tau$ transcendental, $L_{1769}\ne0$. The whole odd case (from $n=21$ to $n=59$) took 1 hour, 42 minutes and 6 seconds to complete, because all cases were computed at once and the longest execution was $n=59$, which took the aforementioned time.
+
+Under the light of these new computations of higher degree systems, the conjecture of \textcite{Qiu2009} stands strong.
+
+\newpage
+
+\begin{lstlisting}[caption={PARI/GP program that computes the first significant Lyapunov constant of a \emph{Qiu-Yang} even differential equation \parencite{Qiu2009}, and solves it to find the condition for which the order of the focus can be increased.},label={lst.qiuyang.even}]
+\r polops.gp
+/* Get argument from PBala */
+n=taskArgs[1];
+/* Define the vectorised field of degree n */
+evenfield(m)=
+{
+    my(v);
+    v=vector(m+1);
+    v[1]=-m/(m-2);
+    v[m]=1;
+    v[m+1]=I*a;
+    return(List([v]));
+}
+
+{
+    R=evenfield(n);
+    /* compute first nonzero lyapunov constant */
+    L=nextlyapunov(R);
+    print("QiuYang n = ",n," (expected first nonzero constant: ",(n*n+n-2),")");
+    print(" - First nonzero Lyapunov const: \n\tL[",L[1][1][1],"] = ",L[1][1][2]);
+    /* factorise the Lyapunov constant */
+    facts=factor(L[1][1][2]);
+    /* tau is the solution of the linear factor */
+    tau=-polcoeff(facts[2,1],0,a)/polcoeff(facts[2,1],2,a);
+	 
+    print("\nWith a^2 = ",tau);
+    Li=0;
+    for(i=1,n^2+2*n-1,
+        /* compute next lyapunov constant from the previous one */
+        L=nextlyapunov(R,L[2],L[1]);
+        /* check if it vanishes under tau */
+        if(substpol(L[1][i][2],a^2,tau)!=0,
+            Li=L[1][i];
+            break;
+        );
+    );   
+    if(Li!=0,
+        print(" - First nonzero Lyapunov const:\n\t L[",Li[1],"] = ",substpol(Li[2],a^2,tau));
+        print("\tNumerical approximation = ",substpol(Li[2],a,sqrt(tau)));
+    );
+    if(Li==0,
+        print(" - Suspected center, further analysis required\n");
+    );
+}
+\q
+\end{lstlisting}
+
+
+\begin{lstlisting}[caption={PARI/GP script that computes the first nonzero Lyapunov constant for the odd cases in Proposition \ref{prop.qiuyang}. This program does not need to solve any equation, since the key point is that the systems have a high order focus \emph{if} the first nonzero Lyapunov constant \emph{cannot} be solved, which only happens for $\tau$ transcendental.},label={lst.qiuyang.odd}]
+\r polops.gp
+/* Get argument from PBala */
+n=taskArgs[1];
+/* Define the vectorised field of degree n */
+oddfield(n)=
+{
+    local(v);
+    v=vector(n+1);
+    v[1]=n/(n-2);
+    v[n]=1;
+    v[n+1]=1+I*a;
+    return(List([v]));
+}
+/* compute first nonzero lyapunov constant */
+L=firstlyapunov(oddfield(n));
+print("QiuYang n = ",n," (expected first nonzero constant: ",(n*n+n-2)/2,")");
+print(" - First nonzero Lyapunov const:\n\tL[",L[1][1],"] = ",L[1][2]);
+/* Show factorisation */
+fctr=factor(L[1][2]);
+print("\tFactorisation: ",fctr);
+\q
+\end{lstlisting}
+

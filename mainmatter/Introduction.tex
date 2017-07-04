@@ -1,0 +1,176 @@
+% !TeX root = ../TFM.tex
+\chapter{Introduction}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Motivation of this work}
+
+In this Masters Thesis we aim to study the theoretical framework around the center-focus problem, and to develop a set of computational tools in order to produce a solid ground from where to solve problems that require the symbolic computation of Lyapunov constants. In particular, we aspire to take a first step towards the characterization of all the possible centers for a family of planar differential polynomial equations with three monomial nonlinearities.
+
+The layout of this work is the following. In this first chapter, we will introduce the reader to the center-focus problem, the mathematical notation that we are going to use, and several basic definitions such as \emph{first integral} and \emph{Lyapunov constant}. Then, in the second chapter we will explain how to systematically compute the Lyapunov constants of a given complex differential equation, with some considerations about non \emph{well posed} systems.
+
+In the third chapter we will discuss many improvements to the algorithm previously introduced. In this chapter we will explain the development of a set of operations that transform polynomial algebra in Computer Algebra Systems to vector operations, which increases the speed of computation. We will also introduce our parallelization interface PBala, which is a piece of software that allows users to seamlessly distribute executions in a cluster and will be a key factor for being able to simulate many systems of differential equations at once. Here we will also introduce some algebraic concepts that will be used later on, such as the \emph{Gröbner basis} of an ideal in a polynomial ring.
+
+The fourth chapter will serve as a test for all the tools we developed. We will try to recover some results from previous research and also use the performance of our computational software to check a conjecture for higher degree systems than what the original authors could compute.
+
+In the fifth chapter, we will take the first step towards the classification and exhaustive characterization of centers for planal differential polynomial equations that are expressed with three monomial nonlinearities in complex variable. Here a first theorem of characterization of centers will be given, and we will discuss the future possibility of computing the conditions in which the theorem gives an exhaustive classification.
+
+Finally, in Chapter 6 we will talk about the future work that will follow the content of this Masters Thesis.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Center-focus problem}
+
+Consider a system of planar differential equations with a singular point at the origin $(x,y)=(0,0)$, under a suitable coordinates transformation such that the coefficients matrix for the linear part is in canonical form \parencite{Hirsch2004}:
+\begin{align}
+\begin{cases}
+\dot x&=\lambda x-y+P(x,y),\\
+\dot y&=x+\lambda y+Q(x,y).
+\end{cases}
+\label{eq.system.real}
+\end{align}
+Here, $P$ and $Q$ are real analytic functions without constant nor linear terms. From Hartman-Grobman, we know that if $\lambda\ne0$, the singular point is hyperbolic and it is either a stable strong focus ($\lambda<0$) or an unstable one ($\lambda>0$) \parencite{Hartman1960}. If we consider $\lambda=0$, we cannot use the linear components to distinguish between a center and a focus, and our attention has to turn to the higher degree terms. 
+
+This problem is known as the \emph{center-focus problem}, and has motivated many studies and the development of several methods that aim to find necessary and sufficient conditions on $P$ and $Q$ for the origin to be a center \parencite{Dumortier2006}.
+
+From Poincaré, we know that if the origin is a center then there exists an analytic first integral \parencite{Ilyashenko2006}, so if we could construct such an object by imposing the existence of this analytic function and we found an impassable barrier we would be able to affirm that the singular point is not a center, but a focus. Recently, many practical methods for this construction arise from the use of computer algebra systems and the computation capabilities of modern computers. However, these methods can only tackle a small portion of the problem, such as restricted families of systems (e.g. when $P$ and $Q$ are homogeneous, real polynomials of degree 2, \nptextcite{Zoladek1994} and when they are homogeneous, real polynomials of degree 3, \nptextcite{Dukaric2016}). Another studied subfamily of systems is that where $P$ and $Q$ satisfy that $R=P+iQ$ only has two monomials in complex coordinates \parencite{Gasull2016}. The last chapter of this work is based in the last paper.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Complex coordinates}
+
+In order to simplify the notation, we will use complex coordinates to treat this problem. If we apply the change $z=x+iy$ the system \eqref{eq.system.real} with $\lambda=0$ can be written as
+\begin{align}
+\dot z &= iz + R(z,{\z}),\qquad \dot \z = -i\z + \overline{R}(z,{\z}).
+\label{eq.system.complex}
+\end{align}
+Here $R$ is an analytic function with complex coefficients defined as $R=P+iQ$.
+
+\begin{lemma}
+Let $P(x,y)\in\R[x,y]$ a polynomial with real coefficients, and $R(z,\z)$ its transformation to complex variable. Then, the coefficient $r_{m,n}$ corresponding to the term $z^m\z^n$ satisfies that $r_{m,n}=\overline{r_{n,m}}$ for any $m,n$.
+
+\begin{proof}
+We can firstly consider a single monomial $p_{k,\ell}x^ky^\ell$. Notice that, since $p_{k,\ell}\in\R$, we can consider $p_{k,\ell}=1$ without loss of generality. Thus, we consider $x^ky^\ell$. Written in complex variable:
+\begin{align}
+x&=\frac{z+\z}{2}, \qquad y=\frac{z-\z}{2i},\\
+x^ky^\ell &= \left(\frac{z+\z}{2}\right)^k\left(\frac{z-\z}{2i}\right)^\ell:= f(z,\z).
+\end{align}
+
+We can expand $f$ using the binomial expansion:
+\begin{align*}
+f(z,\z)&=\frac{1}{2^{k+\ell}i^\ell}\sum_{n=0}^k\binom{k}{n}z^{k-n}\z^n \sum_{m=0}^\ell(-1)^mz^{\ell-m}\z^m\\
+&=\frac{1}{2^{k+\ell}i^l}\left(\binom{k}{0}z^k+\binom{k}{1}z^{k-1}\z+\cdots+\binom{k}{k-1}z\z^{k-1}+\binom{k}{k}\z^k\right)\\
+&{}\left(\binom{\ell}{0}z^\ell-\binom{\ell}{1}z^{\ell-1}\z+\cdots+\binom{\ell}{\ell-1}(-1)^{\ell-1}z\z^{\ell-1}+\binom{\ell}{\ell}(-1)^\ell\z^\ell\right).
+\end{align*}
+
+Let us compute $\overline{f(\z,z)}$:
+\begin{align*}
+\overline{f(\z,z)}&=
+\frac{1}{2^{k+\ell}(-1)^\ell i^\ell}\left(\binom{k}{0}\z^k+\binom{k}{1}\z^{k-1}z+\cdots+\binom{k}{k-1}z^{k-1}\z+\binom{k}{k}z^k\right)\\
+&{}\left(\binom{\ell}{0}\z^\ell-\binom{\ell}{1}\z^{\ell-1}z+\cdots+\binom{\ell}{\ell-1}(-1)^{\ell-1}\z z^{\ell-1}+\binom{\ell}{\ell}(-1)^\ell z^\ell\right)\\
+&=\frac{1}{2^{k+\ell}i^\ell}\left(\binom{k}{k}z^k+\binom{k}{k-1}z^{k-1}\z+\cdots+\binom{k}{1}z\z^{k-1}+\binom{k}{0}\z^k\right)\\
+&{}\left(\binom{\ell}{\ell}(-1)^{2\ell}z^\ell+\binom{\ell}{\ell-1}(-1)^{2\ell-1}+\cdots+\binom{\ell}{1}(-1)^{\ell+1}z\z^{\ell-1}+\binom{l}{0}(-1)^\ell\z^\ell\right)\\
+\end{align*}
+\begin{align*}
+&=
+\frac{1}{2^{k+\ell}i^\ell}\left(\binom{k}{k}z^k+\binom{k}{k-1}z^{k-1}\z+\cdots+\binom{k}{1}z\z^{k-1}+\binom{k}{0}\z^k\right)\\
+&{}\left(\binom{\ell}{\ell}z^\ell-\binom{\ell}{\ell-1}z^{\ell-1}\z+\cdots+\binom{\ell}{1}(-1)^{\ell-1}z\z^{\ell-1}+\binom{\ell}{0}(-1)^\ell\z^\ell\right)\\
+&=f(z,\z),
+\end{align*}
+because binomial coefficients are symmetric $\binom{k}{n}=\binom{k}{k-n}$.
+
+Therefore, the equality is satisfied for every monomial of the real polynomial, which assures that the final complex polynomial will satisfy the property.
+\end{proof}
+\end{lemma}
+
+This lemma shows a property that we will be able to use, because all our complex polynomials will be of the for $R=P+iQ$, where $P$ and $Q$ are real polynomials.
+%deixar això o treure tot el lema?
+
+
+
+
+\section{First integral and Lyapunov constants}
+\label{sec.firstint}
+\begin{definicio}
+Given a $\C$-polynomial system such as \eqref{eq.system.complex}, its associated vector field is
+\begin{align}
+Z&=\dot{z}\pd{}{z}+ \dot{\z}\pd{}{\z}.
+\label{eq.vectorfield.complex}
+\end{align}
+Then, the system is \emph{integrable} on an open subset $U$ of $\C$ if there exists a nonconstant analytic function $H:U\to\C$, called a \emph{first integral} of the system on $U$, such that $H$ is constant along all solution curves $(z(t),\z(t))$ of \eqref{eq.system.complex}. That is, $H(z(t),\z(t))=h$ for some constant $h$, for all $t$ for which the solution is defined inside $U$ \parencite{Dumortier2006}.
+\end{definicio}
+
+It is trivial to see that $H(z,\z)$ is a first integral if and only if $ZH=(iz+R)H_z+(-i\z+\overline{R})H_{\z}=0$ on $U$, because the solution curves $(z(t),\z(t))$ follow $Z$.
+
+Our system \eqref{eq.system.complex} has a singular point at the origin. If we only consider the linear part, the singular point is a center, and $H=z\z$ is a first integral:
+\begin{align*}
+H' &= H_z \dot z + H_{\z} \dot \z = \z(iz)+z(-i\z)=0.
+\end{align*}
+Therefore, we can consider a first integral for the complete case (if it exists) of the form
+\begin{align}
+H=z\z+\sum_{k=3}^\infty H_k(z,\z),
+\label{eq.first_integral}
+\end{align}
+which is a perturbation of the linear case by an analytic function in a neighbourhood of the origin. $H_k$ are homogeneous complex polynomials in $z,\z$ of degree $k$:
+\begin{align}
+H_k &= \sum_{j=0}^k h_{k-j,j}z^{k-j}\z^j.
+\end{align}
+We start at $k=3$ because the first term of the original first integral is already of degree 2. The following lemma will give us a direct method for distinguishing between a center and a focus.
+
+\begin{lemma}[\nptextcite{Songling1981}]
+\label{lemma.songling}
+Given the planar system of differential equations \eqref{eq.system.complex}, there exists a formal power series:
+\begin{align*}
+F=z\z+\sum_{k=3}^\infty F_k(z,\z),
+\end{align*}
+such that
+\begin{align*}
+\frac{\dd F}{\dd t} &= F_z\dot z+F_{\z}\dot\z = \sum_{k=1}^\infty -V_k(z\z)^{k+1}
+\end{align*}
+\end{lemma}
+%For a proof of this lemma (in real coordinates), see \textcite{Songling1981}.
+The main idea for understanding this lemma will be clear in the following chapter, where we explain the computational method derived from it.
+
+\begin{observacio}
+In Lemma \ref{lemma.songling}, if $V_k=0$ for all $k>0$, we have that $F(z,\z)=H(z,\z)$ is a first integral of the system, and therefore the singular point at the origin is a center.
+\end{observacio}
+
+\begin{definicio}
+The quantities $V_k\in\R[\{r_{m,n}\}]$, where $\R[\{r_{m,n}\}]$ denotes the multivariate polynomial ring in the coefficients of $R(z,\z)$ of the system \eqref{eq.system.complex} over the real field, are called \emph{Lyapunov constants} (or \emph{focal values}, or \emph{center conditions}). Also, given a polynomial system, the first nonzero Lyapunov constant is called the \emph{first significant} Lyapunov constant.
+\end{definicio}
+
+Our method for distinguishing between weak foci and centers is based on the existence of this first integral $H(z,\z)$. We will explain the method used for its construction more in depth in the following chapters (see e.g. \nptextcite{Songling1984} for a similar explanation using real variables).
+
+\begin{observacio}
+Notice that we only consider \emph{well posed} systems with singular points in the origin, i.e. systems of the form \eqref{eq.system.complex} with $\lambda=0$ with the singularity at the origin. If we wanted to analyse systems with singularities outside of the origin, we would have to apply a transformation to the system in order to place the singularity at the origin, which would render a system generally not in the form of \eqref{eq.system.complex}. \textcite{Christopher2006}, deals with these kind of systems that cannot be forced to have a first integral like \eqref{eq.first_integral}, using a general quadratic term $H_2(x,y)=Ax^2+Bxy+Cy^2$. The computational method that follows in order to determine if the singular point is a center or a weak focus is very similar to what we will use, and we will comment it a bit in a later chapter although we will not apply these generalizations in this work because they will not be needed.
+\end{observacio}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Limit cycles and the 16th Hilbert problem}
+
+\begin{definicio}
+For a system of differential equations with unique solution outside of the origin, such as \eqref{eq.system.real}, a \emph{periodic orbit} of the system is a curve given by a periodic nonconstant solution $(f(t),g(t))$.
+\end{definicio}
+
+\begin{definicio}
+Given a periodic orbit $\gamma$ of a system, we call it an \emph{externally (internally) limit cycle} if for an arbitrarily small outer (inner) neighbourhood of $\gamma$ there do not exist other periodic orbits \parencite{Dumortier2006}.
+\end{definicio}
+
+The study of a higher bound for the number of limit cycles that can bifurcate from a center-focus singular point is an interesting and difficult problem in the theory of planar differential equations. See \textcite{Gine2007,Llibre2010} for studies in which a maximum number of limit cycles for certain systems is given. This number is closely related to the number of functionally independent Lyapunov constants that can be computed from a system. For further reference, Giné's conjecture for the maximum number of functionally independent Lyapunov constants (and, under some assumptions, of limit cycles) is
+\begin{align}
+N&=n^2-3n+7,
+\label{eq.max-lyaps}
+\end{align}
+where $n$ is the degree of $R(z,\z)$ in \eqref{eq.system.complex}.
+
+In 1902, David \citeauthor{Hilbert1902} %David \textcite{Hilbert1902} 
+stated his famous 23 mathematical problems which influenced greatly the Mathematics of the twentieth century. Problem number 16 (\emph{Problem of the topology of algebraic curves and surfaces}) asks about the relative position of branches of a $n-$th order algebraic curve in the plane, and as a related question brings the problem of finding an upper bound for the limit cycles in planar differential equations of degree $n$ and an investigation of their relative positions.
+
+This is still an open problem in which much research has been performed during both the \nth{20} and \nth{21} centuries. The practical possibility of computing higher order Lyapunov constants for certain systems of differential equations, using both elaborated methods and powerful computers, has provided researches with tools to tackle this problem with a deeper understanding on how the systems behave, but the complete solution for any $n$ seems still a cyclopean task to resolve for the present state of both Mathematics and Computer Science.
+
+

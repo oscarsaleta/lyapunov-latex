@@ -1,0 +1,530 @@
+% !TeX root = ../TFM.tex
+
+\chapter{Improvements to the algorithm}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Scale issues for computation}
+
+The procedure for computing Lyapunov constants shown in the previous chapter is well known \parencite{Christopher2006,Songling1981,Songling1984}, but it puts a lot of strain on computers. For instance, CAS (Computer Algebra Systems) have a hard time computing derivatives, Taylor expansions (to pick only terms of a certain degree at each step) and so on. On the other hand, memory requirements for these operations are really high, and even computers with hundreds of GB of RAM can fall short. We have to take into account that, for a general field of degree 3 ($R=r_{2,0}z^2+r_{1,1}z\z+r_{0,2}\z^2+r_{3,0}z^3+r_{2,1}z^2\z+r_{1,2}z\z^2+r_{0,3}\z^3$) the fourth Lyapunov constant is a polynomial in $\R[r_{2,0},r_{1,1},r_{0,2},r_{3,0},r_{2,1},r_{1,2},r_{0,3},\overline{r_{2,0}},\overline{r_{1,1}},\overline{r_{0,2}},\overline{r_{3,0}},\overline{r_{2,1}},\overline{r_{1,2}},\overline{r_{0,3}}]$ with already 2644 monomials\footnote{This means that the other 9 variables $h_{i,j}$ in degree 10 (which is the degree where the \nth{4} Lyapunov constant is computed) are also polynomials of this size.}, and each step depends on all the variables computed in previous steps, so everything has to be stored during computations.
+
+Table \ref{tab.maple} shows the number of monomials of the first 5 Lyapunov constants (as computed by the algorithm explained in the previous chapter), along with the memory used during their computation. The fifth constant already takes nearly 5GB of RAM and 12 minutes to compute (and this is using Maple 18, which automatically parallelizes computations when possible). It is clear that it is not feasible to compute higher order Lyapunov constants using this approach.
+
+\begin{table}[H]
+\centering
+\caption{Number of monomials, size in memory of the objects used during the computation, and time spent computing, for the first five Lyapunov constants of the system $\dot z=iz+r_{2,0}z^2+r_{1,1}z\z+r_{0,2}\z^2+r_{3,0}z^3+r_{2,1}z^2\z+r_{1,2}z\z^2+r_{0,3}\z^3$. Computations for this table were performed using Maple 18 with an Intel Core 2 Duo E8400@3.00GHz and 6GB of RAM. This was not the computer used in the other computations of this work due to lack of computing power.}
+\label{tab.maple}
+\begin{tabular}{|c|c|c|c|}
+\hline
+Constant & Number of monomials & Size (MB) & Time (s)\\
+\hline
+1 & 4 & 5.5 & 0.068\\
+2 & 52 & 14.6 & 0.148\\
+3 & 462 & 115.0 & 1.432\\
+4 & 2644 & 857.1 & 31.528\\
+5 & 10885 & 4846.5 & 755.212\\
+\hline
+\end{tabular}
+\end{table}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Adaptions to the algorithm and computing systems}
+\label{sec.adaptions}
+
+
+As we have seen, adaptations must be made in order to make this problem computationally affordable. We will treat each one of these during the current chapter:
+
+\begin{itemize}
+\item
+In the first place, as we already stated, we have decided to focus our efforts on systems with only 3 monomial nonlinearities, which reduces the number of parameters to take into account to 4 (if we also apply a change of variables in order that the first monomial has coefficient 1, more on this later).
+\item
+Then, we need to free the CAS from the burden of computing symbolic derivatives and series expansion and truncation. With this goal, we developed a computational system of equivalent operations that work with vectors instead of multivariate polynomials.
+\item
+Since we do not need specific functions for treating derivatives and Taylor series, because we will develop our own computing system tailored specifically for this problem, we can choose wisely a less \emph{powerful} CAS (in the sense that it has less readily available functions and libraries), and pick one that has higher native speed of computation. In our case, we will use PARI/GP (which will be introduced later).
+
+We also can choose from several CAS solutions specifically for each task that we need to perform, and use the Sage interfaces to establish a communication bridge between them.
+\item
+Since we will need to make computations for tens of thousands of different 3-monomial systems, we must develop a system of parallelization of type \emph{same program-multiple data} (SPMD) to carry out the computation of several systems at the same time and automatically feed idle processors a new system as soon as they have finished their previous task.
+\end{itemize}
+
+\begin{observacio}
+A further improvement that we can add to the previous algorithm is to work in $\Z/p\Z[a_1,a_2,b_1,b_2]$ with $p$ a prime number, instead of in $\R[a_1,a_2,b_1,b_2]$. In this polynomial ring based on a finite field, if a polynomial can be reduced (in the Gröbner sense explained in the previous chapter) to zero then it is clear that it will be reduced also over the bigger ring. However, sometimes it can happen that a polynomial would reduce in the bigger ring and does not in the ring based on a finite field. This is not a big problem in this case, because we can consider a big enough $p$ such that this problem is not met often, and the cases where this might occur are secondary in the sense that we care about \emph{correctly discarding} polynomials (so a ``false positive'' in polynomial reduction would be an issue, but false negatives are not critical for the final results\footnote{This is the same problem as not being able to detect all the cases in which $L_j$ reduces because it could be a power of it the one which does.}).
+\end{observacio}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{On 3-monomial systems}
+\label{sec.3mono.resonant}
+
+We stated before that our systems will have three monomial nonsingularities, so equation \eqref{eq.system.complex} will in practice be:
+\begin{align}
+\dot z = iz + Az^k\z^\ell+Bz^m\z^n+Cz^p\z^q,
+\label{eq.system.3}
+\end{align}
+where $A,B,C\in\C$, $2\le k+\ell\le m+n\le p+q$, $(k,\ell)\ne(m,n)\ne(p,q)$. \textcite{Gasull2016} treat the similar problem of systems with two monomial nonlinearities with great depth.
+
+We will use the integer values $\alpha=k-\ell-1$, $\beta=m-n-1$ and $\gamma=p-q-1$. These will play an important role because when one is zero, its respective monomial appears as a \emph{resonant monomial} in the Poincaré normal form of the complex differential equation \parencite{Gasull2016}. For instance, we stated that our study dealt with Lyapunov constants living in a multivariate polynomial ring of 4 parameters over the real field, but system \eqref{eq.system.3} has 6 parameters ($A,B,C$ and their conjugates, or $a_1,a_3,b_1,b_2,c_1,c_2$ if we write $A=a_1+a_2i$, etc.). However, we could try and apply a change of variables $w=\mu z$, for $\mu=r\e^{i \varphi}\in\C$ and $r\in\R$, such that our system \eqref{eq.system.3} is written as:
+\begin{align}
+\dot z = iz + z^k\z^\ell+\tilde Az^m\z^n+\tilde Bz^p\z^q,
+\label{eq.system.3.4p}
+\end{align}
+where these $\tilde A,\tilde B\in\C$.
+
+Under which conditions can we make this variable change? If we assume that $ABC\ne0$ (so we have 3 monomials), we can write the change of variables as
+\begin{align*}
+z=r\e^{i \varphi}w,\quad(\mathrm{resp.}~\z=r\e^{-i \varphi}\overline w),
+\end{align*}
+such that $r\e^{i \varphi}A=1$. When we apply this change to the equation $\dot z=iz+Az^k\z^\ell$, we obtain the following expression:
+\begin{align*}
+\dot w &= iw+Ar^{k+\ell-1}\e^{i \varphi (k-\ell-1)}w^k\overline w^\ell.
+\end{align*}
+Thus, the term $Ar^{k+\ell-1}\e^{i \varphi(k-\ell-1)}$ cannot be cancelled if $k-\ell-1=0$, because in this case the equation would be $A=1$, which is false in general.
+
+A monomial $Az^k\z^\ell$ that satisfies $k-\ell-1=0$ is called a \emph{resonant monomial}. Therefore, if $\alpha=k-\ell-1=0$ (i.e., if the first of the three monomials is resonant) we will have to change the order of the monomials and put a non-resonant one as the first monomial if we want to write the equation as in \eqref{eq.system.3.4p}.
+
+\begin{observacio}
+The fewer cases where all three monomials are resonant will not be treated in this work, because the polynomial ideal where the Lyapunov constants belong has two extra parameters and we will focus our efforts in trying to characterize the centers in the 4-parameter case.
+\end{observacio}
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{A vectorised computing system for polynomials}
+\label{sec.pol2vec}
+In order to fulfill our second improvement, we need to define a method of translation from vectors to polynomials. This method shall not be a general procedure, but one that suits our requirements for working in $\C[z,\z]$ and speeding up the implementation of the algorithm explained in the previous chapter.
+
+Along this section we will use several PARI/GP\footnote{PARI/GP is a widely used computer algebra system designed for fast computations in number theory (see online resources at \url{http://pari.math.u-bordeaux.fr/}).} code snippets to show the implementation of some functions. The syntax is similar to other CAS and takes some elements from the C programming language (because PARI is a C library whereas GP is its interactive implementation), so the code is easy to read and understand.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Vector-polynomial-vector translation}
+
+\begin{definicio}
+\label{def.pol2vec}
+Let $P_k(z,\z)\in\C[z,\z]$ be a complex polynomial in $z$ and $\z$ of degree $k$. We can write it as
+\begin{align*}
+P_k(z,\z)&=p_{k,0}z^k+p_{k-1,1}z^{k-1}\z+\cdots+p_{1,k-1}z\z^{k-1}+p_{0,k}\z^k,
+\end{align*}
+where $p_{j,k-j}\in\C$. Then, we define the \emph{vector corresponding to $P_k$} as:
+\begin{align}
+\hat P_k(z,\z)&=\left(p_{k,0},p_{k-1,1},\dots,p_{1,k-1},p_{0,k}\right)^T.
+\end{align}
+\end{definicio}
+
+\begin{observacio}
+Notice that what defines the degree of a polynomial expressed as a vector is its \emph{length}:
+\[\mathrm{deg}(P_k)=\mathrm{len}(\hat P_k)-1.\]
+Also, it is important to remark that the \emph{order} of the coefficients in these vectors is really important, because each position in the vector corresponds to a certain monomial, depending on the lenght of the polynomial used in the representation.
+
+A drawback of this notation is that we might need a long vector to express a single monomial. For example, the monomial $z\z^8$ will be a vector of length 10, with every coefficient equal to zero except the one before the last.
+\end{observacio}
+
+
+The following code snippets show two functions that translate a polynomial to a vector and a vector to a polynomial respectively:
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[language=C,caption={PARI/GP function that takes in an homogeneous polynomial, its degree (although this could be obtained from the polynomial automatically), and the names of the variables, and returns a vector following Definition \ref{def.pol2vec}.}]
+/*Polynomial to vector. Arguments: P polynomial, n degree, vx 1st variable letter, vy 2nd variable letter*/
+pol2vec(P,n,vx,vy)=
+{
+	my(aux);
+	aux = vector(n+1);
+	for(i=1,n,
+		aux[i] = polcoeff(P,n-1+1,vx);
+		if(i>1,
+			aux[i] = polcoeff(aux[i],i,vy);
+		);
+	);
+	return(aux);
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[caption={PARI/GP function that takes a vector and returns the corresponding polynomial with variables $z$ and $w=\z$.}]
+/*Vector to polynomial. Arguments: v vector*/
+vec2pol(v)=
+{
+    my(pol,n);
+    n=#v;
+    for(i=1,n,
+        pol += v[i]*z^i*w^(n-i);
+    );
+    return(pol)
+}
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\begin{observacio}
+The definition, and also the operations are all defined only for homogeneous polynomials. For non-homogeneous polynomial, we treat them as the sum of two or more homogeneous polynomials, so the expression will be a list of vectors of different length each, and our routines for summing, multiplying and differentiating them will have go through each (homogeneous) element of the list. PARI/GP supports dynamic lists using the \texttt{List()} constructor, which will make this implementation fairly easy.
+\end{observacio}
+
+In the following subsections we will explain how to multiply and compute derivatives of polynomials expressed as vectors. However, it is worth mentioning how to sum or substract using this method, which is trivial for homogeneous polynomials of the same degree (just sum the coefficients in a vector-like sum). For summations of polynomials of different coefficients we will use the list implementation explained in the previous observation.
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Product of polynomials as vectors}
+
+Let $P_k(z,\z),Q_{\ell}(z,\z)\in\C[z,\z]$ be two homogeneous polynomials in $z,\z$ of degree $k$ and $\ell$, respectively. The product $R_{k+\ell}=P_kQ_{\ell}$ must be a polynomial of degree $k+\ell$, thus corresponding to a vector of length $k+\ell+1$ (and not $k+\ell+2$, which would be the addition of lengths of both vectors). Using vector notation,
+\begin{align*}
+\hat P_k(z,\z)&=\left(p_{k,0},p_{k-1,1},\dots,p_{1,k-1},p_{0,k}\right)^T,\\
+\hat Q_\ell(z,\z) &= \left(q_{\ell,0},q_{\ell-1,1},\dots,q_{1,\ell-1},q_{0,\ell}\right)^T.
+\end{align*}
+Remember that the length of $P_k$ is $k+1$ and the length of $Q_{\ell}$ is $\ell+1$. 
+
+The \textbf{algorithm for multiplying} $\hat P_k$ and $\hat Q_{\ell}$ goes like this:
+\begin{enumerate}
+\item
+Define $v=(0,\dots,0)$ of length $k+\ell+1$.
+\item
+For $j$ from 0 to $k$ do:
+\begin{enumerate}[(i)]
+\item
+$aux = p_{k-j,j} \hat Q_{\ell}$ (as a scalar by vector product)
+\item
+Add $j$ zeros to the beginning of $aux$ (displacing the coefficients to the left)
+\item
+Add as $k-j$ zeros to the end of $aux$ so that the vector has length $k+\ell+1$.
+\item
+$v = v+aux$.
+\end{enumerate}
+\end{enumerate}
+
+\begin{observacio}
+In this algorithm no assumptions are made with respect to if $k<\ell$ or $k>\ell$. Notice that the algorithm works exactly the same for both cases.
+\end{observacio}
+
+\begin{proposition}
+The vector $v$ defined in the previous algorithm is equivalent (via Definition \ref{def.pol2vec}) to the polynomial $S_{k+\ell}=P_kQ_{\ell}$.
+\begin{proof}
+The algorithm tells us to perform the following operation:
+\begin{align*}
+p_{k,0}
+\begin{bmatrix}
+q_{\ell,0}\\
+q_{\ell-1,1}\\
+\vdots\\
+q_{1,\ell-1}\\
+q_{0,\ell}\\
+0\\
+\vdots\\
+0
+\end{bmatrix}
++p_{k-1,1}
+\begin{bmatrix}
+0\\
+q_{\ell,0}\\
+q_{\ell-1,1}\\
+\vdots\\
+q_{1,\ell-1}\\
+q_{0,\ell}\\
+0\\
+\vdots\\
+0
+\end{bmatrix}
++\cdots+p_{1,k-1}
+\begin{bmatrix}
+0\\
+\vdots\\
+0\\
+q_{\ell,0}\\
+q_{\ell-1,1}\\
+\vdots\\
+q_{1,\ell-1}\\
+q_{0,\ell}\\
+0\\
+\end{bmatrix}
++p_{0,k}
+\begin{bmatrix}
+0\\
+\vdots\\
+0\\
+q_{\ell,0}\\
+q_{\ell-1,1}\\
+\vdots\\
+q_{1,\ell-1}\\
+q_{0,\ell}\\
+\end{bmatrix}.
+\end{align*}
+
+Take as an example $k=3$, $\ell=2$, and consider the following notation:
+\begin{align*}
+P_3&=p_0z^3+p_1z^2\z+p_2z\z^2+p_3\z^3,\\
+Q_2&=q_0z^2+q_1z\z+q_2\z^2.
+\end{align*}
+Now we have
+\begin{align*}
+p_0
+\begin{bmatrix}
+q_0\\
+q_1\\
+q_2\\
+0\\
+0\\
+0\\
+\end{bmatrix}
++p_1
+\begin{bmatrix}
+0\\
+q_0\\
+q_1\\
+q_2\\
+0\\
+0\\
+\end{bmatrix}
++p_2
+\begin{bmatrix}
+0\\
+0\\
+q_0\\
+q_1\\
+q_2\\
+0\\
+\end{bmatrix}
++p_3
+\begin{bmatrix}
+0\\
+0\\
+0\\
+q_0\\
+q_1\\
+q_2\\
+\end{bmatrix}
+&=
+\begin{bmatrix}
+p_0q_0\\
+p_0q_1+p_1q_0\\
+p_0q_2+p_1q_1+p_2q_0\\
+p_1q_2+p_2q_1+p_3q_0\\
+p_2q_2+p_3q_1\\
+p_3q_2\\
+\end{bmatrix}.
+\end{align*}
+
+Notice how the $j$-th term in this product is a sum of terms of $P$ and $Q$, $p_mq_n$, such that $m+n=j$. We can define the sequences $\tilde P$ and $\tilde Q$ as the $P_k$ and $Q_{\ell}$ extended by zeros:
+\begin{align*}
+\tilde P &= 
+\begin{bmatrix}
+p_{k,0}\\
+\vdots\\
+p_{0,k}\\
+0\\
+\vdots
+\end{bmatrix}
+\qquad
+\tilde Q =
+\begin{bmatrix}
+q_{\ell,0}\\
+\vdots\\
+q_{0,\ell}\\
+0\\
+\vdots
+\end{bmatrix}.
+\end{align*}
+
+This assures us that the following formula works for describing the algorithm:
+\begin{align*}
+(S_{k+\ell})_j &= \sum_{m=0}^j \tilde p_m \tilde q_{j-m}.
+\end{align*}
+
+Notice that this is actually the formula for the $j-$th coefficient of the polynomial $S_{k+\ell}=P_kQ_{\ell}$:
+\begin{align*}
+P_kQ_{\ell} &= \sum_{j=0}^{k+\ell} \sum_{m=0}^j p_mq_{j-m}z^{k+\ell-j}\z^j,
+\end{align*}
+where the coefficients of $P_k$ and $Q_{\ell}$ are also extended to be zero outside of the range of the polynomial.
+
+Therefore, the algorithm for vector product yields an equivalent result to the polynomial multiplication, as we wanted to prove.
+\end{proof}
+\end{proposition}
+
+Next, the code fragment shows this algorithm implemented in PARI/GP.
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[caption={Vectorised polynomial product in PARI/GP.}]
+/* multiplies 2 homogeneous polynomials as vectors */
+vpolmult(P,Q)=
+{
+    my(len,res,aux);
+    len = #P + #Q - 1;
+    res = vector(len);
+    for(j=1,#P,
+        aux = vector(len);
+        for (i=1,#Q,
+            aux[i+j-1] = P[j]*Q[i];
+        );
+        res += aux;
+    );
+    return(res)
+};
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{Derivative of polynomials as vectors}
+
+The last operation that we need to apply to our polynomials is to differentiate them with respect to $z$ or $\z$. Integration is not needed for our purposes, so we did not implement it.
+
+The derivative of a polynomial with respect to one of its variables is completely straightforward (multiply the coefficient by the exponent and substract one from the exponent). In vector notation, this is translated into a decrease of 1 in lenght (because the degree decreases in 1), removing the rightmost element for differentiation with respect to $z$ and the leftmost element for differentiation with respect to $\z$, and multiplying every coefficient by the degree of the variable (which is the total degree minus the position, starting from the left when differentiating by $z$ and from the right when differentiating by $\z$).
+
+The procedure will become clearer with this example of degree 4:
+\begin{align*}
+P_4(z,\z) &= p_{4,0}z^4+p_{3,1}z^3\z+p_{2,2}z^2\z^2+p_{1,3}z\z^3+p_{0,4}\z^4,\\
+\frac{\dd}{\dd z} P_4(z,\z) &= 4p_{4,0}z^3+3p_{3,1}z^2\z+2p_{2,2}z\z^2+p_{1,3}\z^3,\\
+\frac{\dd}{\dd \z} P_4(z,\z) &= p_{3,1}z^3+2p_{2,2}z^2\z+3p_{1,3}z\z^2+4p_{0,4}\z^3,\\
+\hat P_4 &= (p_{4,0},p_{3,1},p_{2,2},p_{1,3},p_{0,4})^T,\\
+\frac{\dd}{\dd z} \hat P_4 &= (4p_{4,0},3p_{3,1},2p_{2,2},p_{1,3})^T,\\
+\frac{\dd}{\dd \z} \hat P_4 &= (p_{3,1},2p_{2,2},3p_{1,3},4p_{0,4})^T.
+\end{align*}
+
+The simple functions for performing these operations are shown below:
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[caption={Function for differentiating by $z$.}]
+/* differentiates a homogeneous polynomial with resp. to z */
+vpoldz(P)=
+{
+    my(deg,res);
+    deg = #P-1;
+    res = vector(deg);
+    for(i=1,deg,
+        res[i] = (deg-i+1)*P[i];
+       );
+    return(res)
+};
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[caption={Function for differentiating by $\z$.}]
+/* differentiates a homogeneous polynomial with resp. to w */
+vpoldw(P)=
+{
+    my(deg,res);
+    deg = #P-1;
+    res = vector(deg);
+    for(i=1,deg,
+        res[deg-i+1] = (deg-i+1)*P[#P-i+1];
+       );
+    return(res)
+};
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+This procedure is really simple for the computer, because it only relies in following a for loop without having to search for degrees of monomials or variables, etc. The key to the speedup that this representation brings is the storage of the vectors, as the position of the coefficients encodes the degree of each monomial instead of allowing for repositioning of monomials and having to look for the information on the degree and coefficients \emph{a posteriori}, as many CAS do.
+
+\begin{observacio}
+As we have shown that the vector representation given by Definition \ref{def.pol2vec} is equivalent to the polynomial expressions for adding, multiplying and differentiating polynomials, we will use the ``no hat'' notation throughout this work, even though operations are considered to be performed in the vectorised form.
+\end{observacio}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Choice of CAS}
+
+As we showed in the previous section, our CAS of choice for performing computations is PARI/GP. Among other considerations, we took into account that the memory allocated by PARI available for performing computations is static (there is no dynamic memory allocation that allows to increase the stack on demand). This removes overhead at the possible cost of unused allocated memory (which is not a problem for systems with big amounts of available RAM memory like ours).
+
+Another reason for choosing PARI/GP for our computations is its Sage\footnote{SageMath is a free open-source mathematics software system licensed under the GPL (see \url{http://www.sagemath.org/}).} interface. As Sage builds on top of many computing packages, we can take advantage of the speed of PARI/GP when computing Lyapunov constants with our vectorised functions and the power of Singular\footnote{Singular is a computer algebra system for polynomial computations, with special emphasis on commutative and non-commutative algebra, algebraic geometry, and singularity theory (see \url{https://www.singular.uni-kl.de/}).} for treating these constants, which are polynomials in 4 variables for which our vectorised operations are no longer useful. Sage allows the results from one computing software to be passed to the other CAS and acts as a translator between the two.
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{SPMD implementation using PVM}
+
+As mentioned in Section \ref{sec.adaptions} SMPD stands for \emph{Same Program Multiple Data}, which is a parallelization paradigm that consists on executing a same piece of software many times but changing the input data for each execution.
+
+This is the way to proceed in our case, because we need to run exactly the same computations for many different fields. For example, if we wanted to make some computations  for every possible field of the type $\dot z=iz+R(z,\z)$, with $R(z,\z)$ a non-homogeneous complex polynomial of degree up to 3, we would need to run
+\begin{align*}
+\frac{(g(2)+g(3))!}{(g(2)+g(3)-3)!}=504
+\end{align*}
+executions, where $g(x)=2(\mathcal{P}_2(x)+1)$ is the number of partitions of size 1 or 2 of $x\in\N$ taking into account the order of the sum. For degree 7, this result increases up to 110544 executions. This means that if every execution takes 20 minutes to complete, it would take around 1535 days (more than 4 years) of uninterrupted execution to study the full degree 7 case sequentially.
+
+Instead, if we resort to SPMD and are able to run, for example, 50 executions at once, we would reduce the computation time from 1535 days to 30 days (which is still a long execution time, but affordable for some).
+
+
+\subsubsection{Parallel Virtual Machine}
+
+PVM is a software system that enables a heterogeneous computer cluster to be used as a concurrent resource. The functions of this system can be accessed via C or Fortran libraries, in order to initialise the system, take care of message passing and synchronization.
+
+Through a configuration file, PVM can be told how many nodes there are in the cluster and the individual name of each one, in order to be able to execute certain functions in specific nodes to take advantage of their particular strengths (e.g. more available memory or a specific operating system).
+
+We will use the C library for PVM, which is included using the \texttt{\#include <pvm3.h>} clause. If the configuration file is called \emph{hostfile}, we can initialize the PVM daemon from within our C program\footnote{This is a simple example. For a full manual on how to use PVM and the daemon (\emph{pvmd}) check out \url{http://www.csm.ornl.gov/pvm/pvm_home.html}.}:
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[caption={How to initialise the PVM daemon from inside a C program instead of initialising it prior to executing a program}]
+char *pvmd_argv[1] = {"hostfile"}
+int pvmd_argc = 1;
+pvm_start_pvmd(pvmd_argc,pvmd_argv,1);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+PVM's message passing routines, although a bit outdated in design compared to MPI, are really easy to use. The sender fills up a container with all the variables that it wants to send, and the receiver gets the container and unpacks the variables from it:
+\begin{center}
+\begin{minipage}{0.8\textwidth}
+\begin{lstlisting}[caption={Example of message passing in PVM. The sender packs variables in a certain order that has to be respected by the receiver. The receiver might not want to unpack every variable received, however (e.g. unpack only the first two).}]
+/* Sender code */
+int i=1;
+long int j=100;
+double r=0.2;
+pvm_initsend(PvmDataRaw); // necessary for initialising the message
+pvm_pkint(&i,1); // sending one integer located at the memory location of i
+pvm_pklong(&j,1);
+pvm_pkdouble(&r,1);
+pvm_send(1,101); // send to node 1 a message with code 101
+
+/* Receiver code */
+int k;
+long l;
+double d;
+pvm_recv(-1,101); // receive a message with code 101 from any sender
+pvm_upkint(&k,1); // unpack an integer and store it in k
+pvm_upklong(&j,1);
+pvm_upkdouble(&d,1);
+\end{lstlisting}
+\end{minipage}
+\end{center}
+
+
+There are many paradigms for message passing distributed computation, but one of the simplest and yet more powerful is the \emph{master-slave} paradigm. Here, there are two or more programs. One is the master, which is in charge of initialising the software and spawning slaves (or tasks) to be computed. The master sends data to the slaves, the slaves perform all the computational work\footnote{In some cases, the master also performs the work of the slaves at the same time, although this is less frequent and adds unnecessary complexity in most cases.}, and when they finish they send the results back to the master and are \emph{despawned} if there is no more work to do.
+
+The \emph{workload management} is also a central aspect of distributed computing. There are many ways that the master can distribute the work between the spawned slaves. For instance, one could decide to send $1/n$ of all workload to each one of the $n$ slaves. This can work for completely homogeneous cases (i.e. all the slaves have identical hardware properties and all the tasks to perform have exactly the same length). However, it is common that either the slaves are spawned in different, heterogeneous machines, or the tasks could have different computing times, or both. This is why it is more common for the master to send a batch of work to the slaves (e.g. one or two jobs to each slave) and then the slaves ask for more work when they are finished with their tasks. This way the chances of one slave to finish their work really fast and becoming idle are almost nullified, and the performance of the execution increases greatly.
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsubsection{PBala, software for managing SPMD executions}
+
+In order to use PVM, the computations must be carried out by a C or Fortran program, because the PVM library is not available for using from other languages such as PARI/GP or Sage. This arises the need for an intermediate software that manages the activation of pvmd, the spawning of tasks, the distribution of data, etc., all from C but compatible with any program written in Maple, Sage, PARI/GP, Python or even C itself. The idea is that once we have a middleware that can distribute our executions, we just need to write a task in a language of choice and pass the task and a data file to this program, and the program takes care of the rest. It is obvious that this is oriented towards SPMD (Single Program-Multiple Data) executions, because this is what we need for our computations.
+
+We developed a program called \textbf{PBala} that does not only all of the above, but also takes care of the output files generated by each task, supports error reporting and has a verbose output of which task has been executed in which node. It also takes error recovery into account, generating a list of all the tasks that could not be executed (for example because they were killed by the system) in a format which is readily available for reexecuting the program using this new file instead of the original data file, for finishing the execution. What's more, it can also report memory usage data for each execution.
+
+PBala is open source under the GNU GPLv3 license\footnote{See \url{https://www.gnu.org/licenses/gpl-3.0.en.html}.}, the source code is available at \url{https://github.com/oscarsaleta/PBala}. It has been specifically programmed for working in the computing server of the Mathematics Department of the Autonomous University of Barcelona, although little or no modification would be needed for it to work on another cluster with PVM correctly installed and configured.
+
+The software consists in two executables, \emph{PBala} and \emph{task}, of which only PBala has to be run by the user (task is executed by PBala slaves to fork processes that execute the program that the user provided). Currently, only Maple, C, Python, PARI/GP and Sage programs are supported, although the addition of new languages is really simple.
+
+For a more in depth explanation of PBala and some code snippets, see Appendix \ref{apendix.pbala}.
+
+
+
+
+
+
+

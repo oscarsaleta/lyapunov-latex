@@ -1,0 +1,170 @@
+% !TeX root = ../TFM.tex
+
+\chapter{Computation of the Lyapunov constants}
+
+%%%%%%%%%%%%%%%%%%%%%%
+\section{Iterative construction of a formal first integral} 
+
+\begin{observacio}
+During this chapter, we will use the following notation: if $H(z,\z)$ is a complex function of $z$ and $\z$, then $H_z$ and $H_{\z}$ will denote $\partial H/\partial z$ and $\partial H/\partial\z$, respectively. On the other hand, if $H(z,\z)$ can be written as a polynomial or a formal power series, expressions such as $H_k$, where $k$ is an integer, will be used to denote ``the terms of $H(z,\z)$ of degree $k$'', with no partial derivative meaning whatsoever. This convention is used to maintain a simple notation throughout this work, even though it might seem confusing at first.
+\end{observacio}
+
+We can try and generate an object like \eqref{eq.first_integral} step by step, constructing $H_3,H_4$ and so on\footnote{Notice the use of $H_3$ to denote ``the terms of $H(z,\z)$ of degree 3'', since $H$ is a formal power series.}, always imposing that the intermediate result is a first integral (i.e. $\dot H=0$ over the solution curves for the truncated first integral up to the order of the step). This consists simply in computing the quantities $V_i$ from Lemma \ref{lemma.songling} and forcing them to be zero before continuing with the next step.
+
+The first step is $k=3$. Let $H=z{\z}+H_3$, and we impose the condition of first integral using the following notation:
+\begin{align}
+R &= \sum_{j=2}^\infty R_j(z,{\z}) = \sum_{j=2}^\infty \sum_{\ell=0}^j r_{j-\ell,\ell}z^{j-\ell}{\z}^\ell,\\
+H_k &= \sum_{\ell=0}^k h_{k-\ell,\ell}z^{k-\ell}\z^\ell,
+\end{align}
+Then, the total derivative of $H$ is
+\begin{align*}
+\dot H&=H_z\dot z+H_{\z}\dot {\z} \\
+&= ({\z}+3h_{3,0}z^2+2h_{2,1}z{\z}+h_{1,2}{\z})(iz+R) \\
+&{}+ (z+h_{2,1}z+2h_{1,2}z{\z}+3h_{0,3}{\z}^2)(-i{\z}+\overline R).
+\end{align*}
+
+We can separate the computation of $\dot H$ in each step in two parts: $H_z(iz)+H_{\z}(-i{\z})$ and $H_z R+H_{\z}\overline R$.
+\begin{observacio}
+The first part will contain terms of the highest order of $H$, because $H_z$ and $H_{\z}$ have degree one less than $H$, and we are multiplying by a monomial of degree one (and the total degree must be equal to that of $H$). This means that, in step $k$\footnote{Assuming the ``first'' step is $k=3$.}, the term $H_z(iz)+H_{\z}(-i{\z})$ will contain the coefficients of $H_k$, which are unknown. On the other hand, $H_z R+H_{\z}\overline R$ will always involve terms of $H$ of lower degrees (from $H_{k-1}$ to $H_3$ for step $k>3$ or none for $k=3$).
+\end{observacio}
+
+Thus, for $k=3$ we have
+\begin{align*}
+H_z iz &= (3h_{3,0}z^3+2h_{2,1}z^2{\z}+h_{1,2}z{\z}^2)i,\\
+H_{\z} (-i{\z}) &= -(h_{2,1}z^2{\z}+2h_{1,2}z{\z}^2+3h_{0,3}{\z}^3)i,\\
+H_z iz - H_{\z} i{\z} &= (3h_{3,0}z^3+h_{2,1}z^2{\z}-h_{1,2}z{\z}^2-3h_{0,3}{\z}^3)i.
+\end{align*}
+Recall that we want $\dot H=0$, so we can write $H_z(iz)+H_{\z}(-i{\z})=-H_z R-H_{\z}\overline R$. This is a system with $k+1$ equations and $k+1$ unknowns, and the matrix of coefficients is given by the left hand side, which we already computed in this case:
+\begin{align*}
+\begin{pmatrix}
+3 & 0 & 0 & 0\\
+0 & 1 & 0 & 0\\
+0 & 0 & -1 & 0\\
+0 & 0 & 0 & -3\\
+\end{pmatrix}
+\begin{pmatrix}
+h_{3,0}\\h_{2,1}\\h_{1,2}\\h_{0,3}\\
+\end{pmatrix} = -\frac{H_z R+H_{\z}\overline R}{i}.
+\end{align*}
+
+It is straigthforward to see that the system will always be diagonal if we use complex variables\footnote{The idea is that the partial derivative $H_z$ is compensated by the multiplication by $iz$ and the same for ${\z}$, so the degree of each monomial always corresponds to the coefficient of that degree in $H$, thus falling into the diagonal of the matrix.}. Thus, the difficulty of this algorithm will reside in the computation and storage of the independent terms, which are polynomials of as many variables as parameters $R$ has \parencite{Dumortier2006} (in general, they would be analytic functions, but in practice we deal with polynomic fields of finite degree because $R(z,\z)$ is considered to be a polynomial with a finite number of monomials).
+
+Once the right hand side has been computed, we obtain the coefficients of $H_3$ by a simple division. Now we can proceed to the next step, $k=4$, using $h_{3,0},h_{2,1},h_{1,2}$ and $h_{0,3}$ as known parameters of our new system. A simple computation equivalent to what we did above will yield the following system matrix:
+\begin{align*}
+\begin{pmatrix}
+4 & 0 & 0 & 0 & 0\\
+0 & 2 & 0 & 0 & 0\\
+0 & 0 & 0 & 0 & 0\\
+0 & 0 & 0 & -2 & 0\\
+0 & 0 & 0 & 0 & -4\\
+\end{pmatrix}
+\end{align*}
+This matrix is singular because it has a zero in the diagonal corresponding to the term of $(z\z)^{k/2}$, which means that our system has no solution in general. The only solvable case would be when the corresponding right hand side expression was also zero, so we could obtain an indeterminate solution depending on one parameter.
+
+\begin{observacio}
+Notice that these are the terms given by Songling $-V_k(z\z)^{k+1}$: the system can only be solved if $V_k=0$. Also notice that these terms only appear in even steps of the process, because odd steps cannot have a monomial of the form $(z\z)^{k/2}$.
+\end{observacio}
+
+Therefore, in step $k=4$ we can find $L_1:=V_3$. We will use the notation $L_j$ for the $j-$th Lyapunov constant, starting at $j=0$, where $L_0=V_1$ is proportional to $\lambda$ (see, e.g., \nptextcite{Timochouk1994,Christopher2006}), so $L_0=0$ because we consider $\lambda=0$.
+
+\begin{observacio}
+In our case, where $\lambda=0$, the focal values are polynomials in $\R[a_1,a_2,b_1,b_2]$ \parencite{Dumortier2006}, with an ever increasing number of monomials as new orders of Lyapunov constants are computed, which makes computational treatment of the Lyapunov constants a very troublesome problem to handle even with modern and powerful computers.
+\end{observacio}
+
+Notice that for every even degree we will obtain a singular system matrix, so even degrees of $H$ will yield one Lyapunov constant each. There are, however, infinitely many Lyapunov constants. We cannot construct the \emph{full} first integral $H$ using this iterative process in order to assure that the origin is a center of the system. Nevertheless, the question of how many functionally independent Lyapunov constants can we find in a system of differential equations with a center-focus singularity has been studied by researchers such as \textcite{Gine2007}, who conjectured in this work that the maximum number of functionally independent Lyapunov constants is $n^2-3n+7$, as we mentioned in the previous chapter, where $n$ is the degree of $R(z,\z)$ from \eqref{eq.system.complex}. This means that if we find as many null Lyapunov constants there is a strong case for considering that the singular point is a center.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Adaptation to \emph{non-well posed} systems}
+
+As we mentioned in the Introduction, Colin \textcite{Christopher2006} treats the problem of applying the previous algorithm to systems that are not \emph{well posed}, in the sense that they cannot be written in the simple form of \eqref{eq.system.complex}. If a planar system cannot be written as in \eqref{eq.system.complex}, we cannot expect it to admit a first integral of the form \eqref{eq.first_integral}, because the equality $\dot H=0$ will not hold even for degree 2.
+
+For example, if we consider a system that has a singular point of center-focus type but outside of the origin, and we apply a transformation to bring the singular point to the origin, the system will be written generally as
+\begin{align}
+\dot z&= r_{1,0}z+r_{0,1}\z+R(z,\z).
+\end{align}
+
+This means that, instead of considering the formal power series given by Songling in Lemma \ref{lemma.songling}, we will consider
+\begin{align}
+F(z,\z)=h_{2,0}z^2+h_{1,1}z\z+h_{0,2}\z^2+\sum_{k=1}^\infty F_k(z,\z),
+\end{align}
+where $h_{j,k}\in\C$. In this case, we also want to force $F(z,\z)=H(z,\z)$ to be a first integral of the system, but first one has to find $h_{2,0},h_{1,1},h_{0,2}$ such that $H=h_{2,0}z^2+h_{1,1}z\z+h_{0,2}\z^2$ is a first integral of the system $\dot z=r_{1,0}z+r_{0,1}\z$ (in the well posed case, $r_{1,0}=i,r_{0,1}=0$ and $h_{2,0}=h_{0,2}=0,h_{1,1}=1$).
+
+Of course, using this method the underlying algorithm is unchanged: we still iterate order by order finding the conditions that must be held for the system of equations in $h_{j,k}$ to be solvable. However, in this case the coefficient matrices are not diagonal, because the terms $h_{2,0}z^2+h_{0,2}\z^2$ will generate terms with uncompensated degrees that will fall outside the diagonal.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Gröbner basis, reduction of constants and ideals}
+
+In order to make sure that two Lyapunov constants (or multivariate polynomials in the same polynomial ring, in general) are functionally independent, we need to make use of the concept of Gröbner basis of an ideal in a polynomial ring.
+
+In order to introduce the concept of a Gröbner basis we need some previous definitions, all taken from \textcite{Becker1993} and \textcite{Greuel2007}.
+\begin{definicio}
+A \emph{monomial ordering} is a total (or linear) ordering in the set of monomials $\mathrm{Mon}_n=\{x^\alpha~|~\alpha\in\N^n\}$ in $n$ variables satisfying
+\begin{align*}
+x^\alpha>x^\beta\Rightarrow x^\gamma x^\alpha>x^\gamma x^\beta,
+\end{align*}
+for all $\alpha,\beta,\gamma\in\N^n$. We also say that $>$ is a monomial ordering on $A[x_1,\dots,x_n]$, for $A$ any ring, meaning that $>$ is a monomial ordering on $\mathrm{Mon}_n$.
+\end{definicio}
+
+The concept of monomial ordering allows us to write a polynomial $f\in K[x]$ in a unique way, which is what we will use in order to define the polynomial-vector translation of Definition \ref{def.pol2vec} in the next chapter.
+
+In the following definitions we will consider $K$ a field and $K[x]$ a general polynomial ring over $K$.
+
+\begin{definicio}
+Given $>$ a monomial ordering and $f\in K[x]$, $f\ne0$ written according to this ordering, the \emph{leading monomial} of $f$ is $LM(f)=x^\alpha$, where $\alpha$ is the highest exponent (also called \emph{leading exponent}).
+\end{definicio}
+
+\begin{definicio}
+\label{def.lideal}
+For any subset $G\subset K[x]$, define the ideal
+\begin{align*}
+L(G):=\langle LM(g)~|~g\in G\setminus\{0\}\rangle_{K[x]},
+\end{align*}
+called the \emph{leading ideal of $G$}.
+\end{definicio}
+
+\begin{definicio}
+Let $R=K[x_1,\dots,x_n]$ and $I\subset R$ be an ideal. Then,
+\begin{enumerate}
+\item
+A finite set $G\subset R$ is called a \emph{standard basis} of $I$ if $G\subset I$ and $L(I)=L(G)$ (i.e., $G$ is a standard basis if the leading monomials of the elements of $G$ generate the leading ideal of $I$).
+\item
+If the ordering on $R$ is global, a standard basis is called a \emph{Gröbner basis}.
+\end{enumerate}
+\end{definicio}
+
+Now we will present the last definition needed for this section:
+\begin{definicio}
+Let $G\subset R$ be any subset. Then $f\in R$ is called \emph{completely reduced with respect to $G$} if no monomial of the power series expansion of $f$ is contained in $L(G)$.
+\end{definicio}
+
+Therefore, if we work in $R=\R[a_1,b_1,a_2,b_2]$ for computing Lyapunov constants, we can add the following procedures to the iterations of the algorithm previously explained:
+\begin{enumerate}[(i)]
+\item
+After computing the 3 first Lyapunov constants, define the ideal $I=\langle L_1,L_2\rangle\subset R$ and compute its Gröbner basis $B$.
+\item
+Check if $L_3\in R$ is reduced with respect to $B$.
+\begin{itemize}
+\item
+If $L_3$ is completely reduced with respect to $B$, it means that it is functionally dependent on $L_1$ and $L_2$, so it will have the same zeros and does not contribute with new information to the set of Lyapunov constants. Therefore, we discard this constant as zero.
+\item
+If $L_3$ is not completely reduced with respect to $B$, we take only the non reducible part (the monomials which do not belong to $B$) and redefine $L_3$ as these monomials. Then we add $L_3$ to the list of computed Lyapunov constants.
+\end{itemize}
+\item
+Repeat this process at every step, each time adding the new reduced Lyapunov constants to $I$ if they were not completely reduced with respect to $B$.
+\end{enumerate}
+
+\begin{observacio}
+This method can take out many superfluous Lyapunov constants that we do not need. However, it is not perfect. If $L_j$ is not completely reduced with respect to the Gröbner basis of $I$ for the previous constants that were added to the list but $L_j^k$ is, then this constant will not add further information to the center conditions previously contained in $I$ although we will add $L_j$ to the list based on the criteria of the algorithm \parencite{Gasull2001}.
+\end{observacio}
+
+
+
+
+
+
+
+
+
+

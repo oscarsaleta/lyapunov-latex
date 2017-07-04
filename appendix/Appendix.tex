@@ -1,0 +1,181 @@
+% !TeX root = ../TFM.tex
+
+\begin{appendices}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{PBala}\label{apendix.pbala}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Source code for PBala v4.0.1}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Master program}
+
+
+PBala stands for Princess Bala. In the Disney film \emph{Ant Z}, the main character is an ant that falls in love with the princess, Bala, making him work his hardest in order to earn her appreciation. As the name of the computation server used in the Mathematics Department of the Autonomous University of Barcelona is \emph{antz}, it is only logic that a piece of software that makes Antz work as hard as possible, enabling parallelization of SPMD kind in all its cores, is named after the Princess Bala.
+
+\lstinputlisting[caption={PBala v4.0.1 master program source code, \emph{PBala.c}.}]{code/pbala/PBala.c}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Slave program}
+
+\lstinputlisting[caption={PBala v4.0.1 slave program source code, \emph{task.c}.}]{code/pbala/task.c}
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\subsection{Readme extract}
+
+All the source code, license files and manuals can be found at \url{https://github.com/oscarsaleta/PBala}. The following is an extract from the \emph{README.md} file.
+
+
+\subsubsection{Introduction}
+
+This C program uses PVM libraries in order to create a parallellization interface for
+\begin{itemize}
+ \item \textbf{Maple} scripts
+ \item \textbf{C} programs
+ \item \textbf{Python} scripts
+ \item \textbf{Pari/GP} scripts (although Pari should be also supported through the Pari C/C++ library or through gp2c by manually editing the output C code and compiling as a C program using the command provided by gp2c. The executable can then be run using the C module of this software.)
+ \item \textbf{Sage} scripts
+\end{itemize}
+
+This interface lets the user execute a same script/program over multiple input data in several CPUs located at the antz computing server. It sports memory management so nodes do not run out of RAM due to too many processes being started in the same node. It also reports resource usage data after execution.
+
+\subsubsection{Usage}
+
+\textbf{As of v4.0.0:}
+
+The program admits standard \texttt{--help} (\texttt{-?}), \texttt{--usage} and \texttt{--version} (\texttt{-V}) arguments.
+
+Output from \texttt{./PBala --help}:
+\begin{lstlisting}[style=plainbash]
+Usage: PBala [OPTION...] programflag programfile datafile nodefile outdir
+PBala -- PVM SPMD execution parallellizer
+
+  -e, --create-errfiles      Create stderr files
+  -g, --create-memfiles      Create memory files
+  -h, --create-slavefile     Create node file
+  -m, --max-mem-size=MAX_MEM Max memory size of a task (KB)
+  -s, --maple-single-core    Force single core Maple
+  -?, --help                 Give this help list
+      --usage                Give a short usage message
+  -V, --version              Print program version
+
+Mandatory or optional arguments to long options are also mandatory or optional
+for any corresponding short options.
+
+Report bugs to <osr@mat.uab.cat>.
+\end{lstlisting}
+
+
+Output from \texttt{./PBala --usage}:
+\begin{lstlisting}[style=plainbash]
+Usage: PBala [-eghs?V] [-m MAX_MEM] [--create-errfiles] [--create-memfiles]
+            [--create-slavefile] [--max-mem-size=MAX_MEM] [--maple-single-core]
+            [--help] [--usage] [--version]
+            programflag programfile datafile nodefile outdir
+\end{lstlisting}
+
+Mandatory arguments explained:
+\begin{itemize}
+\item
+\texttt{programflag}:
+\begin{itemize}
+\item
+0 = Maple
+\item
+1 = C
+\item
+2 = Python
+\item
+3 = Pari (as of v1.0.0)
+\item
+4 = Sage (as of v3.0.0)
+\end{itemize}
+\item
+\texttt{programfile}: path to program file
+\item
+\texttt{datafile}: path to data file
+\begin{itemize}
+\item
+Line format is ``tasknumber,arg1,arg2,...,argN''
+\end{itemize}
+\item
+\texttt{nodefile}: path to PVM node file
+\begin{itemize}
+\item
+Line format is ``nodename numer\_of\_processes''
+\end{itemize}
+\item
+\texttt{outdir}: path to output directory
+\end{itemize}
+
+Options explained:
+\begin{itemize}
+\item
+\texttt{-e, --create-errfiles}: Save stderr output for each execution in a \emph{task*\_stderr.txt} file
+\item
+\texttt{-g, --create-memfiles}: Save memory info for each execution in a \emph{task*\_mem.txt} file
+\item
+\texttt{-h, --create-slavefile}: Save a log of which task is given to which slave in \emph{node\_info.txt}
+\item
+\texttt{-m, --max-mem-size=MAX\_MEM}: max amount of RAM (in KB) that a single execution can require
+\item
+\texttt{-s, --maple-single-core}: Force Maple to use a single core for its executions
+\end{itemize}
+
+\textbf{Conventions}
+
+  For Maple, we define 2 variables: \texttt{taskId} and \texttt{taskArgs}. \texttt{taskId} is an identifier for the task number that we are sending to the Maple script. \texttt{taskArgs} are the actual arguments that Maple has to use to do the computations. It is important to use these names because they are passed to Maple this way.
+
+  For C and Python we use the argv arrays so make sure the program can read and use those variables (and perform the error checking because this software has no way of knowing if the data file is suitable for your program).
+
+  Pari and Sage are executed by creating auxiliary scripts where \texttt{taskId} and \texttt{taskArgs} are defined, so they could be directly used in the scripts just like in Maple.
+
+
+
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\chapter{Lyapunov computation functions}\label{apendix.pari}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Algorithm for computing ``the next Lyapunov constant'' (PARI/GP)}
+
+The following code snippet is the PARI/GP function \texttt{nextlyapunov()}. It takes as input a field $R$ in the format of a GP \emph{List}, and optional arguments for $H$ (the first integral with each of its coefficients in \emph{List} form) and $L$, which is a \emph{List} of all the Lyapunov constants computed and their degrees. This function is designed with the idea that its output can be used as input for successive calls to it. This way, if we want to compute a certain number of Lyapunov constants, perfom some manipulations on them, and compute more depending on the results obtained, we do not have to start all over again, because intermediate results are taken so computation starts in the correct order.
+
+The source code for every Lyapunov related script used in this work is publicly available at \url{https://github.com/oscarsaleta/Lyapunov} (although, unlike with the PBala repository, this one lacks completely of proper documentation).
+
+\lstinputlisting[firstline=191,caption={PARI/GP function \texttt{nextlyapunov()}.}]{code/pari/polops.gp}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\section{Sage script for computations with 3 monomials}
+
+The following Sage script is prepared to be executed in parallel using PBala. It takes as input the \texttt{taskArgs} vector, which contains the exponents of each monomial. Then it checks if the exponents alone are enough to classify the system as a center using Theorem \ref{th.1}. If these conditions are not met, the program calls PARI/GP. First (line 38) it loads the \texttt{taskArgs} vector into GP, then it executes the \emph{lyap.gp} script (which also can be read below), which defines a GP \emph{List} called \texttt{R} that is used in line 42 to compute the first nonzero Lyapunov constant.
+
+If the \texttt{nextlyapunov(R)} call does not find a nonzero constant, then we call it a center and exit the program. Else, we define a multivariate polynomial ring over a finite field using Singular (this is where the ideals and Gröbner basis will be defined). Then we append the Lyapunov constant and its order to two Python (Sage) lists, and iteratively compute the following constants and reduce them. If they do not completely reduce, we add them to the list (and print them in a Maple-friendly format for later processing).
+
+Finally, we define a polynomial ring over a finite field with a parameter $i$ and minimal polynomial $i^2+1$, so we can write the reversibility conditions in the same Maple format.
+
+\lstinputlisting[language=Python,caption={Main Sage script for computing and iteratively reducing Lyapunov constants, and printing them in a Maple-friendly format for later processing.}]{code/sage/main.sage}
+
+\lstinputlisting[caption={PARI/GP script \emph{lyaps.gp} used to parse \texttt{taskArgs} and generate the field}]{code/pari/lyap.gp}
+
+
+
+
+
+
+
+
+
+\end{appendices}

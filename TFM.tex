@@ -1,0 +1,334 @@
+% arara: pdflatex: { draft: true }
+% arara: biber
+% arara: pdflatex: { synctex: true }
+% arara: pdflatex: { synctex: true }
+
+\documentclass[11pt]{book}
+
+\usepackage[utf8]{inputenc} 
+\usepackage[english]{babel}
+\usepackage{fontenc}
+
+\usepackage{emptypage}
+
+
+\usepackage{multicol}
+\usepackage{longtable}
+\usepackage[font=small,labelfont=bf]{caption}
+
+
+%%% PAGE DIMENSIONS
+%\usepackage[left=1.7cm,top=2.5cm,right=1.7cm,bottom=2.5cm]{geometry} % to change the page dimensions
+\usepackage{geometry}
+\geometry{a4paper}
+
+
+
+
+%%% PLOTS
+\usepackage{graphicx} % support the \includegraphics command and options 
+\usepackage{float}  
+\usepackage[titletoc]{appendix}
+
+
+%%% MATHEMATICS
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{amsthm} 
+\usepackage{mathrsfs}
+\usepackage{mathabx}
+\usepackage{mathtools}
+%\mathtoolsset{showonlyrefs=true}
+%\usepackage[retainorgcmds]{IEEEtrantools}
+%\usepackage{bbold}
+
+%\usepackage{Sweave}
+\usepackage{url}
+\usepackage{nth}
+
+
+\setlength{\parindent}{20pt}
+\setlength{\parskip}{10pt}
+%\usepackage[parfill]{parskip} % Activate to begin paragraphs with an empty line rather than an indent
+
+%%% PACKAGES
+\usepackage{booktabs}
+\usepackage{multirow}
+
+\usepackage{array}
+
+\usepackage{verbatim}
+\usepackage{subfig} 
+\usepackage{enumerate}
+\usepackage[pdftex]{hyperref}
+\hypersetup{ 
+    colorlinks,
+    citecolor=blue,
+    filecolor=black,
+    linkcolor=blue,
+    urlcolor=blue 
+}
+\usepackage{tabularx, colortbl}
+
+\usepackage[final]{pdfpages}
+
+
+%%% BIBLIOGRAPHY
+\usepackage{csquotes}
+
+\usepackage[
+	backend=biber,
+	bibencoding=latin1,
+	%citestyle=numeric-comp,
+	citestyle=apa,
+	%style=numeric-comp,
+	style=apa,
+	%sorting=none,
+	sortcites=true,
+	url=false,
+	isbn=false,
+	doi=false,
+	eprint=false,
+	maxcitenames=3
+	]{biblatex}
+\DeclareLanguageMapping{english}{english-apa}
+\bibliography{references/references.bib}
+\renewcommand*{\bibfont}{\footnotesize}
+
+
+
+%%% CODE
+\usepackage{listings}
+\usepackage{xcolor}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstdefinestyle{plainbash}{language=bash,keywordstyle=\color{black}, numbers=none, belowskip=-1.8\baselineskip, frame=none}
+
+
+\lstset{ %
+  language=C,                     % the language of the code
+  basicstyle=\footnotesize\ttfamily,       % the size of the fonts that are used for the code
+  numbers=left,                   % where to put the line-numbers
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line
+                                  % will be numbered
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  backgroundcolor=\color{white},  % choose the background color. You must add \usepackage{color}
+  showspaces=false,               % show spaces adding particular underscores
+  showstringspaces=false,         % underline spaces within strings
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  frame=single,                   % adds a frame around the code
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. commens (green here))
+  tabsize=2,                      % sets default tabsize to 2 spaces
+  captionpos=b,                   % sets the caption-position to bottom
+  breaklines=true,                % sets automatic line breaking
+  breakatwhitespace=false,        % sets if automatic breaks should only happen at whitespace
+  title=\lstname,                 % show the filename of files included with \lstinputlisting;
+                                  % also try caption instead of title
+  keywordstyle=\color{blue},      % keyword style
+  commentstyle=\color{dkgreen},   % comment style
+  stringstyle=\color{mauve},      % string literal style
+  escapeinside={\%*}{*)},         % if you want to add a comment within your code
+  linewidth=1\textwidth,
+  morekeywords={*,...}            % if you want to add more keywords to the set
+} 
+
+
+%%% HEADERS & FOOTERS
+\usepackage{fancyhdr} % This should be set AFTER setting up the page geometry
+\pagestyle{fancy} % options: empty , plain , fancy
+\renewcommand{\headrulewidth}{0.5pt} % customise the layout\dots
+%\renewcommand{\sectionmark}[1]{\markboth{\thechapter.\ #1}{}}
+
+\fancyhf{}
+\fancyhead[L]{\nouppercase \leftmark}
+\fancyhead[C]{}
+\fancyhead[R]{\thepage}
+
+\fancypagestyle{firstpage} {
+\fancyhf{}
+\renewcommand{\headrulewidth}{0pt}
+\fancyfoot[C]{\thepage}
+}
+
+%\lhead{Bachelor Thesis}\chead{}\rhead{BSc. in Physics}
+%\lfoot{}\cfoot{\thepage}\rfoot{}
+
+%%% SECTION TITLE APPEARANCE
+\usepackage{sectsty}
+%\allsectionsfont{\sffamily\mdseries\upshape} % (See the fntguide.pdf for font help)
+% (This matches ConTeXt defaults)x
+
+%%% ToC (table of contents) APPEARANCE
+\usepackage[nottoc,notlof,notlot]{tocbibind} % Put the bibliography in the ToC
+\usepackage[titles,subfigure]{tocloft} % Alter the style of the Table of Contents
+\renewcommand{\cftsecfont}{\rmfamily\mdseries\upshape}
+\renewcommand{\cftsecpagefont}{\rmfamily\mdseries\upshape} % No bold!
+
+
+
+%%% CUSTOMISED ENVIRONMENTS
+\newtheorem{theorem}{Theorem}[chapter]
+\newtheorem{corollary}[theorem]{Corollary}%[section]
+\newtheorem{lemma}[theorem]{Lemma}%[section]
+\newtheorem{proposition}[theorem]{Proposition}%[section]
+\theoremstyle{definition}
+\newtheorem{definicio}[theorem]{Definition}%[section]
+\newtheorem{observacio}[theorem]{Observation}%[section]
+
+
+
+
+
+
+%%% CUSTOMISED COMMANDS
+\newcommand{\R}{\mathbb{R}}
+\newcommand{\C}{\mathbb{C}}
+\newcommand{\N}{\mathbb{N}}
+\newcommand{\Z}{\mathbb{Z}}
+\newcommand{\Q}{\mathbb{Q}}
+\newcommand{\e}{\mathrm{e}}
+\renewcommand{\Re}{\mathrm{Re}}
+\renewcommand{\Im}{\mathrm{Im}}
+\newcommand{\z}{\overline{z}}
+\renewcommand{\div}{\mathrm{div}}
+\newcommand{\pd}[2]{\frac{\partial{#1}}{\partial{#2}}}
+\newcommand{\dd}{\mathrm{d}}
+
+
+\numberwithin{equation}{chapter}
+\numberwithin{figure}{chapter}
+\numberwithin{table}{chapter}
+
+
+
+\definecolor{lightgray}{gray}{0.8}
+\newcolumntype{L}{>{\raggedleft}p{0.14\textwidth}}
+\newcolumntype{R}{p{0.8\textwidth}}
+\newcolumntype{N}{p{0.65\textwidth}}
+\newcommand\VRule{\color{lightgray}\vrule width 0.5pt}
+
+
+\newcommand{\HRule}{\rule{\linewidth}{0.5mm}}
+
+\newcommand{\grafico}[5]{
+\begin{figure}
+[h!tbp]
+\centering
+\includegraphics[scale=#2, angle=#3]{#1}
+\captionsetup{width=13cm}
+\caption{#4\label{#5}}
+\end{figure}
+}
+
+
+\usepackage{etoolbox}
+\makeatletter
+\appto{\appendices}{\def\Hy@chapapp{Annex}}
+\makeatother
+\addto\captionscatalan{%
+  \renewcommand\appendixname{Annex}
+  \renewcommand\appendixpagename{Annexes}
+}
+
+\begin{document}
+
+
+
+%------------------------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{empty}                          %
+\frontmatter                               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\includepdf{frontmatter/Tapa_Oscar.pdf}    %
+\cleardoublepage                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{frontmatter/abstract}               %
+\cleardoublepage                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\input{frontmatter/agraiments}             %
+\cleardoublepage                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\tableofcontents                           %
+\cleardoublepage                           %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%------------------------------------------%
+
+
+
+%-----------------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{fancy}                   %
+\mainmatter                         %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{firstpage}           %
+\input{mainmatter/Introduction}     %
+\cleardoublepage                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{firstpage}           %
+\input{mainmatter/Algorithm}        %
+\cleardoublepage                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{firstpage}           %
+\input{mainmatter/Optimizations}    %
+\cleardoublepage                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{firstpage}           %
+\input{mainmatter/Papers}           %
+\cleardoublepage                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{firstpage}           %
+\input{mainmatter/3monomials}       %
+\cleardoublepage                    %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{firstpage}           %
+\input{mainmatter/Conclusions}      %
+\cleardoublepage                    %
+%-----------------------------------%
+
+
+
+%-------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\pagestyle{empty}         %
+\input{appendix/Appendix} %
+\cleardoublepage          %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------------------%
+
+
+
+%-------------------------%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\backmatter               %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\thispagestyle{firstpage} %
+\printbibliography        %
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%-------------------------%
+
+
+
+\end{document}
