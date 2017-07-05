@@ -61,9 +61,9 @@ We stated before that our systems will have three monomial nonsingularities, so 
 \dot z = iz + Az^k\z^\ell+Bz^m\z^n+Cz^p\z^q,
 \label{eq.system.3}
 \end{align}
-where $A,B,C\in\C$, $2\le k+\ell\le m+n\le p+q$, $(k,\ell)\ne(m,n)\ne(p,q)$. \textcite{Gasull2016} treat the similar problem of systems with two monomial nonlinearities with great depth.
+where $A,B,C\in\C$, $3\le k+\ell\le m+n\le p+q$, $(k,\ell)\ne(m,n)\ne(p,q)$. \textcite{Gasull2016} treat the similar problem of systems with two monomial nonlinearities with great depth.
 
-We will use the integer values $\alpha=k-\ell-1$, $\beta=m-n-1$ and $\gamma=p-q-1$. These will play an important role because when one is zero, its respective monomial appears as a \emph{resonant monomial} in the Poincaré normal form of the complex differential equation \parencite{Gasull2016}. For instance, we stated that our study dealt with Lyapunov constants living in a multivariate polynomial ring of 4 parameters over the real field, but system \eqref{eq.system.3} has 6 parameters ($A,B,C$ and their conjugates, or $a_1,a_3,b_1,b_2,c_1,c_2$ if we write $A=a_1+a_2i$, etc.). However, we could try and apply a change of variables $w=\mu z$, for $\mu=r\e^{i \varphi}\in\C$ and $r\in\R$, such that our system \eqref{eq.system.3} is written as:
+We will use the integer values $\alpha=k-\ell-1$, $\beta=m-n-1$ and $\gamma=p-q-1$. These will play an important role because when one is zero, its respective monomial appears as a \emph{resonant monomial} in the Poincaré normal form of the complex differential equation \parencite{Gasull2016}. For instance, we stated that our study dealt with Lyapunov constants living in a multivariate polynomial ring of 4 parameters over the real field, but system \eqref{eq.system.3} has 6 parameters ($A,B,C$ and their conjugates, or $a_1,a_2,b_1,b_2,c_1,c_2$ if we write $A=a_1+a_2i$, etc.). However, we could try and apply a change of variables $w=\mu z$, for $\mu=r\e^{i \varphi}\in\C$ and $r\in\R$, such that our system \eqref{eq.system.3} is written as:
 \begin{align}
 \dot z = iz + z^k\z^\ell+\tilde Az^m\z^n+\tilde Bz^p\z^q,
 \label{eq.system.3.4p}
@@ -173,7 +173,7 @@ In the following subsections we will explain how to multiply and compute derivat
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \subsubsection{Product of polynomials as vectors}
 
-Let $P_k(z,\z),Q_{\ell}(z,\z)\in\C[z,\z]$ be two homogeneous polynomials in $z,\z$ of degree $k$ and $\ell$, respectively. The product $R_{k+\ell}=P_kQ_{\ell}$ must be a polynomial of degree $k+\ell$, thus corresponding to a vector of length $k+\ell+1$ (and not $k+\ell+2$, which would be the addition of lengths of both vectors). Using vector notation,
+Let $P_k(z,\z),Q_{\ell}(z,\z)\in\C[z,\z]$ be two homogeneous polynomials in $z,\z$ of degree $k$ and $\ell$, respectively. The product $S_{k+\ell}=P_kQ_{\ell}$ must be a polynomial of degree $k+\ell$, thus corresponding to a vector of length $k+\ell+1$ (and not $k+\ell+2$, which would be the addition of lengths of both vectors). Using vector notation,
 \begin{align*}
 \hat P_k(z,\z)&=\left(p_{k,0},p_{k-1,1},\dots,p_{1,k-1},p_{0,k}\right)^T,\\
 \hat Q_\ell(z,\z) &= \left(q_{\ell,0},q_{\ell-1,1},\dots,q_{1,\ell-1},q_{0,\ell}\right)^T.
@@ -192,7 +192,7 @@ $aux = p_{k-j,j} \hat Q_{\ell}$ (as a scalar by vector product)
 \item
 Add $j$ zeros to the beginning of $aux$ (displacing the coefficients to the left)
 \item
-Add as $k-j$ zeros to the end of $aux$ so that the vector has length $k+\ell+1$.
+Add $k-j$ zeros to the end of $aux$ so that the vector has length $k+\ell+1$.
 \item
 $v = v+aux$.
 \end{enumerate}
